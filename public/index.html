@@ -541,7 +541,7 @@
         '<div style="display:flex;flex-direction:column;gap:8px"><button id="claimBtn" class="btn good">Yes, that&rsquo;s me &mdash; rejoin</button><button id="notMeBtn" class="btn sm">No, I&rsquo;ll use another name</button></div></div>' : '') +
       (savedCode && !drafts.dup ? '<div style="background:#1E2A22;border:1px solid #2C4A37;border-radius:14px;padding:10px 12px 10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><p style="font-size:14px;font-weight:600">Game ' + esc(savedCode) + ' is still going</p><p style="font-size:13px;color:var(--mute)">Jump back in' + (drafts.name ? ' as ' + esc(drafts.name) : '') + '</p></div><button id="rejoinBtn" class="btn good sm" style="width:auto">Rejoin</button></div>' : '') +
       '<div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px">' +
-      '<div><label class="lbl" for="name">Your name</label><input class="field" type="text" id="name" maxlength="16" autocomplete="off" placeholder="Name"></div>' +
+      '<div><label class="lbl" for="name">Your name</label><input class="field" type="text" id="name" name="given-name" maxlength="16" autocomplete="given-name" autocapitalize="words" placeholder="Name"></div>' +
       '<div><label class="lbl" for="code">Game code</label><input class="field codefield" type="text" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD"></div></div>';
     var bar = '<button id="joinBtn" class="btn pri">Join game</button><button id="newBtn" class="btn">Host a new game</button><button id="rulesBtn" class="btn ghost">How to play</button>';
     return screen('', main, bar);
@@ -904,6 +904,7 @@
       el.addEventListener('input', function () {
         if (id === 'code') el.value = el.value.toUpperCase().replace(/[^A-Z]/g, '');
         drafts[id] = el.value;
+        if (id === 'name') store('wg_name', el.value.trim() || null);   // remember the name as soon as it's typed
       });
       if (id === 'clue') { el.addEventListener('focus', setTyping); el.addEventListener('blur', function () { setTimeout(setTyping, 50); }); }
     });
