@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
+<title>Thinkamajig</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@700&display=swap">
+<style>
+  :root{--bg:#0E1116;--s1:#171B22;--s2:#1F242D;--line:#2A313C;--line2:#232934;--ink:#F3F1EC;--mute:#9AA3AE;--mute2:#7D8794;--soft:#C9D0D8;
+    --acc:#CC3F1C;--acc-sh:#7E2410;--key:#E5532E;--key-sh:#8A2412;--body:#3F9FDC;--body-sh:#2A6EA3;--lcd:#AEBFA9;--lcd-ink:#1B2812;
+    --ok:#4FD195;--ok-bg:#173A2A;--no:#F28B82;--no-bg:#3D1A18;--wg:#F2A07E;--wg-bg:#3A2416;--gold:#F2C14E}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
+  p,h1,h2,h3{margin:0}
+  .h{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em}
+  #app{height:100%}
+  .screen{max-width:480px;margin:0 auto;height:100%;height:100dvh;display:flex;flex-direction:column}
+  .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 20px;display:flex;flex-direction:column;gap:14px}
+  .bar{flex:none;padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--s2);background:var(--bg);display:flex;flex-direction:column;gap:8px}
+
+  /* top bar */
+  .top{flex:none;display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;gap:10px}
+  .top .l{display:flex;align-items:center;gap:10px;min-width:0}
+  .code{font-family:"Space Mono",monospace;font-weight:700;letter-spacing:3px;font-size:13px;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
+  .lbl{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;white-space:nowrap}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--key);display:inline-block;flex:none}
+  .steps{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:0 16px 4px}
+  .st{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mute2);padding-top:7px;border-top:3px solid var(--line)}
+  .st.on{color:var(--ink);border-top-color:var(--key)}
+  .st.done{color:var(--mute);border-top-color:#5B6573}
+
+  /* buttons */
+  button{font-family:inherit;cursor:pointer;-webkit-user-select:none;user-select:none}
+  .btn{height:56px;width:100%;border-radius:16px;border:0;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;
+    transition:transform .08s,filter .15s,opacity .15s,background .15s;color:var(--ink);background:var(--s2);border:1px solid var(--line)}
+  .btn:active:not(:disabled){transform:translateY(2px);filter:brightness(1.15)}
+  .btn.pri{background:var(--acc);color:#fff;border:0;box-shadow:0 4px 0 var(--acc-sh)}
+  .btn.pri:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--acc-sh)}
+  .btn.good{background:#3DBE84;color:#06261A;border:0}
+  .btn.ghost{background:transparent;border:0;color:var(--soft);height:44px;font-size:15px;font-weight:600}
+  .btn.sm{height:44px;font-size:15px;border-radius:12px}
+  .btn.warn{background:var(--no-bg);border:1px solid #6A2A26;color:var(--no)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.busy,.btn.busy:disabled{opacity:.85;filter:saturate(.7)}
+  .busy::before{content:"";width:16px;height:16px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .iconbtn{width:44px;height:44px;border-radius:12px;background:transparent;border:1px solid var(--line);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}
+  .iconbtn:active{background:var(--s2)}
+  .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+
+  /* surfaces */
+  .card{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:16px}
+  .list{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:2px 16px}
+  .li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line2);min-height:56px}
+  .li:first-child{border-top:0}
+  .li .nm{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .li .sub{font-size:13px;color:var(--mute)}
+  .hint{font-size:13px;color:var(--mute);text-align:center}
+  .err{background:var(--no-bg);border:1px solid #6A2A26;color:#FFD3CF;border-radius:14px;padding:12px 14px;font-size:14px}
+  .av{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#0E1116;flex:none}
+  .avs{display:inline-flex;padding-left:6px}
+  .avs .av{width:26px;height:26px;font-size:11px;margin-left:-6px;border:2px solid var(--bg)}
+  .avs .av.off{opacity:.3}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:1px}
+  .tag.wg{background:var(--wg-bg);color:var(--wg)}
+  .tag.ed{background:var(--s2);color:var(--soft)}
+  .tag.ld{background:#2B2A1A;color:var(--gold)}
+  .ok{color:var(--ok)}.no{color:var(--no)}
+  label.lbl{display:block;margin-bottom:7px}
+  .field{width:100%;height:52px;border-radius:14px;background:var(--bg);border:1px solid #3A4250;color:var(--ink);font-size:17px;padding:0 14px;font-family:inherit;outline:none}
+  .field:focus{border-color:var(--body)}
+  textarea.field{height:96px;padding:12px 14px;resize:none;line-height:1.4}
+  .codefield{font-family:"Space Mono",monospace;letter-spacing:5px;text-transform:uppercase;text-align:center;font-size:19px}
+  .sw{width:52px;height:32px;border-radius:999px;background:var(--line);position:relative;border:0;padding:0;flex:none;transition:background .15s}
+  .sw i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s}
+  .sw.on{background:var(--acc)}
+  .sw.on i{left:24px}
+  .sw:disabled{opacity:.4}
+  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--s2);border:0;border-radius:14px;padding:12px 14px;width:100%;text-align:left;color:var(--ink)}
+  .toggle:disabled{opacity:.55}
+  .toggle b{display:block;font-size:15px}
+  .toggle small{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+
+  /* the device */
+  .device{width:100%;max-width:300px;margin:0 auto;background:var(--body);border-radius:44px 60px 52px 64px;padding:20px 22px 24px;box-shadow:inset 0 -6px 0 var(--body-sh),0 14px 34px rgba(0,0,0,.4)}
+  .device.sm{max-width:260px;padding:16px 18px 20px}
+  .bezel{background:#16191B;border-radius:999px;padding:11px 18px}
+  .lcd{background:var(--lcd);color:var(--lcd-ink);font-family:"Space Mono",monospace;font-weight:700;letter-spacing:4px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;border-radius:999px;
+    height:72px;font-size:30px;padding:0 10px;text-align:center;line-height:1.05;overflow:hidden;white-space:nowrap}
+  .device.sm .lcd{height:56px;font-size:24px}
+  .lcd.msg{font-size:15px;letter-spacing:2px;white-space:normal}
+  .grille{display:flex;justify-content:center;gap:6px;margin:14px 0}
+  .grille i{display:block;width:26px;height:3px;border-radius:2px;background:var(--body-sh)}
+  .keywrap{display:flex;justify-content:center}
+  .key{width:120px;height:70px;border-radius:50%;background:var(--key);border:0;box-shadow:0 6px 0 var(--key-sh);color:#2A0A02;font-size:12px;font-weight:700;letter-spacing:.16em;
+    transition:transform .06s,box-shadow .06s;touch-action:none}
+  .key:active:not(:disabled),.key.down{transform:translateY(6px);box-shadow:0 0 0 var(--key-sh)}
+  .key:disabled{filter:saturate(.5) brightness(.85)}
+  .key.busy{transform:translateY(6px);box-shadow:0 0 0 var(--key-sh)}
+  .key.busy::before{display:none}
+  .device.sm .key{width:100px;height:58px}
+  .device.dim{filter:saturate(.55) brightness(.85)}
+  .minilcd{background:#16191B;border-radius:999px;padding:6px 10px;flex:none;border:0;touch-action:none}
+  .minilcd .lcd{height:34px;width:128px;font-size:15px;letter-spacing:2px}
+  .preload .minilcd .lcd{width:96px}
+  .peekBtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+
+  /* phase pieces */
+  .bigq{font-size:25px;line-height:1.25;font-weight:600;word-wrap:break-word}
+  .pg{display:flex;gap:6px;align-items:center}
+  .pg i{display:block;width:22px;height:6px;border-radius:3px;background:var(--line)}
+  .pg i.a{background:var(--ok)}.pg i.c{background:var(--ink)}
+  .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+  .seg button{height:42px;border:0;border-radius:9px;background:transparent;color:var(--mute);font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .seg button.y{background:var(--ok-bg);color:var(--ok)}
+  .seg button.n{background:var(--no-bg);color:var(--no)}
+  .seg button.busy{opacity:.7}
+  .center{text-align:center}
+  .bigcheck{width:64px;height:64px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto}
+  .meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--key);border-radius:5px}
+  .upnext{display:flex;align-items:center;gap:10px;background:var(--s2);border-radius:14px;padding:10px 12px;font-size:14px}
+  .like{height:36px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--soft);display:inline-flex;align-items:center;gap:5px;padding:0 10px;font-size:13px;font-weight:600;flex:none}
+  .like.on{border-color:var(--key);color:#FFB49C;background:#2E1C15}
+  .likes{font-size:13px;color:var(--soft);display:inline-flex;align-items:center;gap:4px;flex:none}
+  .delta{font-weight:700;font-size:15px;min-width:34px;text-align:right;flex:none}
+  details.earlier{background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:0 14px}
+  details.earlier summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:52px;cursor:pointer}
+  details.earlier summary::-webkit-details-marker{display:none}
+  details.earlier[open] summary{border-bottom:1px solid var(--line2)}
+  .wordchip{font-family:"Space Mono",monospace;font-weight:700;letter-spacing:2px;background:var(--lcd);color:var(--lcd-ink);border-radius:999px;padding:3px 10px;font-size:13px;text-transform:uppercase}
+  .rv{position:relative}
+  .rv.new{animation:pop .5s ease-out}
+  .rv.new::after{content:"";position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,rgba(255,236,200,.95) 0,rgba(229,83,46,.55) 45%,rgba(229,83,46,0) 72%);animation:puff .9s ease-out forwards}
+  @keyframes pop{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
+  @keyframes puff{0%{transform:scale(.4);opacity:1}100%{transform:scale(11);opacity:0}}
+  .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:12px;padding:8px}
+  .qr svg{width:100%;height:100%;display:block}
+  .qr.big{width:240px;height:240px;margin:0 auto;padding:12px}
+  .bigcode{font-family:"Space Mono",monospace;font-size:40px;font-weight:700;letter-spacing:6px}
+  .rules p{font-size:15px;color:var(--soft);margin-bottom:12px}
+  .rules b{color:var(--ink)}
+
+  /* typing: shrink the device so the keyboard has room */
+  .typing .hero{display:none}
+  .typing .heroMini{display:flex !important}
+
+  /* sheet */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+  .sheet{width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;background:var(--s1);border-radius:22px 22px 0 0;border:1px solid var(--line);border-bottom:0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+  .grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 10px}
+  .sheet .sect{margin-top:16px}
+  .sheet .sect>.lbl{margin-bottom:6px}
+  .sheet .list{background:var(--bg)}
+  @keyframes up{from{transform:translateY(40px);opacity:.6}}
+  @keyframes fade{from{opacity:0}}
+
+  /* toasts */
+  .toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000e;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90%;z-index:40;text-align:center}
+  .toast.alert{top:calc(12px + env(safe-area-inset-top));bottom:auto;background:var(--key);color:#1A0602;font-weight:700;font-size:16px;padding:14px 18px;box-shadow:0 8px 24px #0009;animation:drop .3s ease-out}
+  @keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var S = null;            // latest game view from the server
+  var msg = '';            // message shown on the home screen
+  var inflight = false;    // a poll is in progress
+  var drafts = { name: '', code: '', clue: '', answers: {}, wagers: {}, hard: false };
+  var baseUrl = '';        // address of this web app, for the QR code
+  var toastTimer = null;
+  var editing = false;     // editing my own clue
+  var armed = null;        // which "are you sure?" button is waiting for a second tap
+  var armTimer = null;
+  var view = '';           // '', 'history', 'join', 'rules' — a full-screen page over the game
+  var menuOpen = false, historyData = null;
+  var gi = 0;              // which clue the answer carousel shows
+  var resultsOpen = false; // round results page after the reveal
+  // timed reveal
+  var revealKey = '', revealIdx = 0, revealN = 0, revealTimer = null, rvPlayed = -1, rvFresh = false;
+  var actx = null;
+
+  // ---------- identity (kept in this browser so a refresh rejoins) ----------
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} return null; }
+  var pid = store('wg_pid');
+  if (!pid) { pid = 'p' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store('wg_pid', pid); }
+  drafts.name = store('wg_name') || '';
+  var savedCode = store('wg_code') || '';
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
+  function sgn(d) { return d > 0 ? '+' + d : (d < 0 ? '&minus;' + (-d) : '0'); }
+  function clearToasts() { var old = document.querySelectorAll('.toast'); for (var i = 0; i < old.length; i++) old[i].remove(); }
+  function toast(t) {
+    clearToasts();
+    var d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { d.remove(); }, 2600);
+  }
+
+  // ---------- alerts: banner + vibration + beep ----------
+  function initAudio() {
+    if (actx) return;
+    try { var AC = window.AudioContext || window.webkitAudioContext; if (AC) actx = new AC(); } catch (e) {}
+  }
+  function tone(freq, at, dur) {
+    var o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'sine'; o.frequency.value = freq; g.gain.value = 0.18;
+    o.connect(g); g.connect(actx.destination);
+    o.start(actx.currentTime + at); o.stop(actx.currentTime + at + dur);
+  }
+  function beep() {
+    try {
+      initAudio(); if (!actx) return;
+      if (actx.state === 'suspended' && actx.resume) actx.resume();
+      tone(880, 0, 0.16); tone(1175, 0.2, 0.22);
+    } catch (e) {}
+  }
+  function alertUser(t) {
+    clearToasts();
+    var d = document.createElement('div'); d.className = 'toast alert'; d.textContent = t; document.body.appendChild(d);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { d.remove(); }, 5000);
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+    beep();
+  }
+  if (document.addEventListener) document.addEventListener('click', initAudio);   // browsers only allow sound after a tap
+
+  // ---------- icons ----------
+  function ic(path, sz, sw) { return '<svg width="' + (sz || 20) + '" height="' + (sz || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (sw || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>'; }
+  var I = {
+    menu: ic('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    back: ic('<path d="M15 5l-7 7 7 7"/>'),
+    left: ic('<path d="M15 5l-7 7 7 7"/>', 18),
+    right: ic('<path d="M9 5l7 7-7 7"/>', 18),
+    check: ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 16, 2.6),
+    bigcheck: ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 30, 2.4),
+    x: ic('<path d="M6 6l12 12M18 6L6 18"/>', 16, 2.6),
+    up: ic('<path d="M7 11v9H4v-9h3zm0 0l4-8a2 2 0 0 1 2.5 2.3L13 9h6a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17.7 20H7"/>', 16),
+    lock: ic('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', 18),
+    swap: ic('<path d="M4 9h13l-3-3M20 15H7l3 3"/>', 16),
+    close: ic('<path d="M6 6l12 12M18 6L6 18"/>'),
+    edit: ic('<path d="M4 20h4L19 9l-4-4L4 16v4z"/>', 16)
+  };
+
+  // ---------- avatars ----------
+  var AVC = ['#F2C14E', '#7CC6FE', '#9BE3C3', '#F59AC0', '#C3A6FF', '#FFB38A', '#B5E06A', '#8FD3F4', '#F7A1A1', '#D7C49E', '#A0E7E5', '#E2B6FF'];
+  function avColor(id) {
+    if (S) for (var i = 0; i < S.players.length; i++) if (S.players[i].id === id) return AVC[i % AVC.length];
+    var h = 0; String(id).split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return AVC[h % AVC.length];
+  }
+  function av(id, name, cls) { return '<span class="av' + (cls ? ' ' + cls : '') + '" style="background:' + avColor(id) + '" aria-hidden="true">' + esc(String(name || '?').charAt(0).toUpperCase()) + '</span>'; }
+  function nameOf(id) { if (S) for (var i = 0; i < S.players.length; i++) if (S.players[i].id === id) return S.players[i].name; return ''; }
+
+  // ---------- join QR ----------
+  function joinLink(code) { return baseUrl ? baseUrl + (baseUrl.indexOf('?') < 0 ? '?' : '&') + 'code=' + encodeURIComponent(code) : ''; }
+  function qrSvg(text) {
+    try {
+      if (!text || typeof qrcode !== 'function') return '';
+      var q = qrcode(0, 'M'); q.addData(text); q.make();
+      var svg = q.createSvgTag(4, 0);
+      var m = svg.match(/<svg[^>]*?width="(\d+)(?:px)?"[^>]*?height="(\d+)(?:px)?"/);
+      if (m && svg.indexOf('viewBox') < 0) svg = svg.replace('<svg', '<svg viewBox="0 0 ' + m[1] + ' ' + m[2] + '"');
+      return svg;
+    } catch (e) { return ''; }
+  }
+
+  // ---------- server calls ----------
+  function run(action, extra, done) {
+    var payload = { pid: pid, code: S ? S.code : (extra && extra.code) || '' };
+    for (var k in extra) payload[k] = extra[k];
+    fetch('/.netlify/functions/api', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: action, payload: payload }) })
+      .then(function (res) { return res.json(); })
+      .then(function (r) { done(r || { ok: false, err: 'No response.' }); })
+      .catch(function () { done({ ok: false, err: 'Connection problem. Try again.' }); });
+  }
+
+  // Click helper: every button visibly changes while it works.
+  function act(btn, busyText, action, extra, after) {
+    if (!btn || btn.disabled) return;
+    var orig = btn.innerHTML;
+    btn.classList.add('busy'); btn.disabled = true; btn.innerHTML = busyText;
+    run(action, extra || {}, function (r) {
+      if (r.ok && r.phase) {
+        if (r.pid && r.pid !== pid) { pid = r.pid; store('wg_pid', pid); }
+        drafts.dup = null;
+        if (action === 'create' || action === 'join') { store('wg_code', r.code); store('wg_name', drafts.name); }
+        msg = '';
+        if (after) after(r);
+        setState(r, true);
+      } else {
+        btn.classList.remove('busy'); btn.disabled = false; btn.innerHTML = orig;
+        if (r.dup && !S) { drafts.dup = { name: r.name, code: (extra && extra.code) || '' }; msg = ''; render(); return; }
+        if (S) toast(r.err || 'Something went wrong.'); else { msg = r.err || 'Something went wrong.'; render(); }
+      }
+    });
+  }
+
+  // "Are you sure?" buttons: the first tap arms the button, the second tap does it.
+  function disarm() { armed = null; clearTimeout(armTimer); }
+  function armBtn(id, key, label, armedLabel, cls) {
+    var a = armed === key;
+    return '<button id="' + id + '" class="btn ' + (a ? 'warn ' : '') + (cls || '') + '">' + (a ? armedLabel : label) + '</button>';
+  }
+  function onArm(id, key, fn) {
+    on(id, function (b) {
+      if (armed !== key) {
+        armed = key; clearTimeout(armTimer);
+        armTimer = setTimeout(function () { armed = null; render(); }, 5000);
+        render(); return;
+      }
+      disarm(); fn(b);
+    });
+  }
+
+  // ---------- timed reveal ----------
+  function revealUnits(r) {
+    var u = [];
+    r.clues.forEach(function (c, ci) {
+      u.push({ t: 'h', ci: ci });
+      c.entries.forEach(function (e, ei) { u.push({ t: 'a', ci: ci, ei: ei }); });
+      u.push({ t: 'f', ci: ci });
+    });
+    return u;
+  }
+  function groupEnd(r, k) { var n = 0; for (var i = 0; i < k && i < r.clues.length; i++) n += r.clues[i].entries.length + 2; return n; }
+  function revealLimit(r) { return groupEnd(r.result, r.rvc == null ? r.result.clues.length : r.rvc); }
+  function stopReveal() { if (revealTimer) { clearInterval(revealTimer); revealTimer = null; } }
+  function initReveal(prev, r) {
+    var key = r.code + '-' + r.round;
+    if (key === revealKey) return;
+    revealKey = key; revealN = revealUnits(r.result).length; rvPlayed = -1; resultsOpen = false;
+    stopReveal();
+    if (prev && prev.phase !== 'reveal') revealIdx = 0;   // watched it begin: each writer releases their own group
+    else revealIdx = revealLimit(r);                       // arrived after the fact: show everything released so far
+  }
+  // Play the newly released group one reveal at a time (1 second apart).
+  function syncReveal() {
+    if (!S || S.phase !== 'reveal' || !S.result) return;
+    var lim = revealLimit(S);
+    if (revealIdx < lim && !revealTimer) {
+      revealIdx++;
+      revealTimer = setInterval(function () {
+        if (!S || S.phase !== 'reveal') { stopReveal(); return; }
+        var l = revealLimit(S);
+        if (revealIdx < l) revealIdx++;
+        if (revealIdx >= l) stopReveal();
+        render();
+      }, 1000);
+    }
+  }
+
+  function setState(r) {
+    var prev = S;
+    var phaseChanged = !prev || prev.phase !== r.phase || prev.round !== r.round;
+    S = r;
+    if (phaseChanged) {
+      disarm(); editing = false; gi = 0;
+      if (r.phase !== 'guess') { drafts.answers = {}; drafts.wagers = {}; }
+      if (r.phase !== 'draw') drafts.clue = '';
+      if (r.phase !== 'reveal') resultsOpen = false;
+    }
+    if (editing && !r.canEditClue) editing = false;
+    if (r.phase === 'reveal') {
+      var pr = (prev && prev.phase === 'reveal' && prev.round === r.round) ? prev.rvc : -1;
+      initReveal(prev, r); syncReveal();
+      var nx = r.result.clues[r.rvc];
+      if (nx && nx.giverId === r.me && pr !== r.rvc) alertUser('Your turn: reveal the answers to your clue!');
+    } else { stopReveal(); revealKey = ''; }
+    if (prev && prev.round === r.round && prev.phase !== r.phase) {
+      if (prev.phase === 'draw' && r.phase === 'guess') { if (r.toGuess.length) alertUser('All clues are in. Time to answer!'); }
+      else if (prev.phase !== 'judge' && r.phase === 'judge') alertUser(r.myJudge ? 'All answers are in. Time to judge your clue!' : 'All answers are in!');
+      else if (prev.phase === 'judge' && r.phase === 'reveal') alertUser('Results are in!');
+    }
+    if (view === 'history' && phaseChanged && r.phase === 'reveal') loadHistory();
+    if (view === 'join' && r.hostId !== r.me) view = '';
+    render();
+  }
+
+  function poll() {
+    if (!S || inflight) return;
+    inflight = true;
+    run('state', { v: S.v }, function (r) {
+      inflight = false;
+      if (r.ok && r.same) return;
+      if (r.ok && r.phase) { setState(r); return; }
+      if (r.gone) { leave(r.err); }
+    });
+  }
+  setInterval(poll, 1800);
+
+  function leave(m) {
+    view = ''; menuOpen = false; historyData = null; editing = false; resultsOpen = false; disarm(); stopReveal(); revealKey = '';
+    S = null; store('wg_code', null); savedCode = ''; msg = m || ''; render();
+  }
+
+  function loadHistory() {
+    run('history', {}, function (r) {
+      if (r && r.gone) { leave(r.err); return; }
+      historyData = r; if (view === 'history') render();
+    });
+  }
+
+  // ---------- the word: only visible while you hold it ----------
+  var MASK = '&#9679; &#9679; &#9679; &#9679; &#9679;';
+  var peeking = false;
+  function fit(w, base) { var n = w.length || 1; return Math.max(Math.round(base * 0.42), Math.min(base, Math.round(base * 8 / n))); }
+  function peek(on) {
+    peeking = on;
+    var l = document.querySelectorAll('.lcd[data-w]');
+    for (var i = 0; i < l.length; i++) {
+      var w = l[i].getAttribute('data-w'), base = +l[i].getAttribute('data-fs') || 30;
+      l[i].innerHTML = on ? esc(w) : MASK;
+      l[i].style.fontSize = (on ? fit(w, base) : Math.round(base * 0.6)) + 'px';
+      l[i].style.letterSpacing = on ? '' : '1px';
+    }
+    var k = document.querySelectorAll('.key.peekBtn');
+    for (var j = 0; j < k.length; j++) k[j].classList.toggle('down', on);
+  }
+  function maskLcd(word, fs, extra) {
+    return '<div class="lcd' + (extra || '') + '" data-w="' + esc(String(word || '').toUpperCase()) + '" data-fs="' + fs + '" style="font-size:' + Math.round(fs * 0.6) + 'px;letter-spacing:1px">' + MASK + '</div>';
+  }
+  function showLcd(text, fs, cls) { var t = String(text || '').toUpperCase(); return '<div class="lcd' + (cls || '') + '" style="font-size:' + (fs ? fit(t, fs) + 'px' : '') + '">' + esc(t) + '</div>'; }
+
+  // mode: 'get' (press for a word), 'word' (hold to peek), 'sent', 'idle'
+  function device(mode, word, opt) {
+    opt = opt || {};
+    var fs = opt.sm ? 24 : 30, lcd, key;
+    if (mode === 'word') {
+      lcd = maskLcd(word, fs);
+      key = '<button class="key peekBtn" aria-label="Hold to see your word">HOLD</button>';
+    } else if (mode === 'get') {
+      lcd = '<div class="lcd msg">PRESS THE<br>RED KEY</div>';
+      key = '<button class="key" id="' + (opt.id || 'redBtn') + '" aria-label="Get your word">PRESS</button>';
+    } else if (mode === 'sent') {
+      lcd = '<div class="lcd msg">CLUE SENT</div>';
+      key = '<button class="key" disabled aria-hidden="true" tabindex="-1"></button>';
+    } else {
+      lcd = '<div class="lcd">' + esc(opt.text || 'HELLO') + '</div>';
+      key = '<button class="key" disabled aria-hidden="true" tabindex="-1"></button>';
+    }
+    return '<div class="device' + (opt.sm ? ' sm' : '') + (mode === 'sent' ? ' dim' : '') + '"><div class="bezel">' + lcd + '</div>' +
+      '<div class="grille"><i></i><i></i><i></i><i></i><i></i></div><div class="keywrap">' + key + '</div></div>';
+  }
+  // A small LCD you hold to read: used for your word while judging and for next round's word.
+  function miniWord(word) {
+    return '<button class="minilcd peekBtn" aria-label="Hold to see the word">' + maskLcd(word, 15) + '</button>';
+  }
+
+  // ---------- shared chrome ----------
+  var STEP = { draw: 0, guess: 1, judge: 2, reveal: 3 };
+  function topBar(s) {
+    return '<div class="top"><div class="l"><span class="code">' + esc(s.code) + '</span><span class="lbl">' + (s.phase === 'lobby' ? 'Waiting room' : 'Round ' + s.round) + '</span></div>' +
+      '<div class="l" style="gap:8px">' + (s.phase === 'lobby' ? '' : '<span class="pill" aria-label="You have ' + s.myScore + ' chips"><span class="dot"></span>' + s.myScore + '</span>') +
+      '<button class="iconbtn" id="menuBtn" aria-label="Menu: scores, history, players">' + I.menu + '</button></div></div>';
+  }
+  function steps(s) {
+    var cur = STEP[s.phase], names = ['Write', 'Answer', 'Judge', 'Reveal'], o = '<div class="steps" aria-label="Round progress">';
+    names.forEach(function (n, i) { o += '<div class="st' + (i === cur ? ' on' : (i < cur ? ' done' : '')) + '"' + (i === cur ? ' aria-current="step"' : '') + '>' + n + '</div>'; });
+    return o + '</div>';
+  }
+  function pageTop(title) {
+    return '<div class="top"><div class="l"><button class="iconbtn" id="backBtn" aria-label="Back">' + I.back + '</button><span class="h" style="font-size:20px;font-weight:700">' + title + '</span></div></div>';
+  }
+  function screen(head, main, bar) {
+    return '<div class="screen">' + head + '<div class="main" id="main">' + main + '</div>' + (bar ? '<div class="bar">' + bar + '</div>' : '') + '</div>';
+  }
+  // A row of little faces: who is done (bright) and who we wait on (faded).
+  function whoRow(s, text) {
+    return '<div style="display:flex;align-items:center;justify-content:center;gap:10px"><span class="avs">' +
+      s.players.map(function (p) { return av(p.id, p.name, p.done ? '' : 'off'); }).join('') + '</span><p class="hint">' + text + '</p></div>';
+  }
+  function waitingNames(s) {
+    var w = s.players.filter(function (p) { return !p.done; }).map(function (p) { return p.id === s.me ? 'you' : p.name; });
+    var left = s.needCount - s.doneCount;
+    if (left <= 0) return '';
+    if (w.length !== left || w.length > 3) return plural(left, 'player');
+    return w.length === 1 ? w[0] : w.slice(0, -1).join(', ') + ' and ' + w[w.length - 1];
+  }
+  function statusList(s) {
+    return '<div class="list">' + s.players.map(function (p) {
+      return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + (p.id === s.me ? ' <span class="sub">(you)</span>' : '') + '</span>' +
+        (p.done ? '<span class="ok" style="display:inline-flex;align-items:center;gap:6px;font-size:14px">' + I.check + 'Done</span>' : '<span style="font-size:14px;color:var(--gold)">Working&hellip;</span>') + '</div>';
+    }).join('') + '</div>';
+  }
+  // Next round's word, grabbed early while you wait.
+  function preloadCard(s) {
+    if (s.phase === 'ended' || s.phase === 'draw') return '';
+    var has = !!s.myPre;
+    return '<div class="card preload" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' +
+      (has ? miniWord(s.myPre) : '<div class="minilcd"><div class="lcd" style="font-size:12px">NO WORD</div></div>') +
+      '<div style="flex:1;min-width:0"><p style="font-weight:600;font-size:14px">' + (s.phase === 'lobby' ? 'Your first word' : 'Next round&rsquo;s word') + '</p><p style="font-size:12px;color:var(--mute)">' + (has ? 'Hold to peek. Only you see it.' : 'Grab it now to think ahead.') + '</p></div>' +
+      '<button class="btn sm" id="preBtn" style="width:auto;padding:0 14px">' + (has ? I.swap + 'Swap' : 'Get') + '</button></div>';
+  }
+
+  function rulesHtml() {
+    return '<div class="rules">' +
+      '<p>Everyone starts with <b>5 chips</b>. Each round, everyone gets a secret word at the same time. Press the red key to get yours, hold it to peek, and write a clue that describes it without saying it.</p>' +
+      '<p>When all the clues are in, everyone answers everyone else&rsquo;s clues. You can change your answers until everyone has locked in.</p>' +
+      '<p>A correct guess earns <b>1 chip</b>. The clue writer earns 1 chip per correct guess, <b>unless everyone gets it</b> &mdash; then the writer gets nothing.</p>' +
+      '<p>You can <b>wager a chip</b> on an answer: right earns 2, wrong loses 1 &mdash; unless nobody got that clue, then you keep it.</p>' +
+      '<p>Each writer judges the answers to their own clue, then reveals them to the room. Give a thumbs-up to clues and answers you love.</p>' +
+      '<p>The game ends when the <b>100 chips</b> in the center run out. Most chips wins.</p></div>';
+  }
+
+  // ---------- screens ----------
+  function homeScreen() {
+    var main = '<div class="center" style="padding-top:18px"><h1 class="h" style="font-size:40px;font-weight:700">Thinkamajig</h1><p style="color:var(--mute);margin-top:4px">Describe the word. Don&rsquo;t say it.</p></div>' +
+      device('idle', '', { sm: true, text: 'HELLO' }) +
+      (msg ? '<div class="err">' + esc(msg) + '</div>' : '') +
+      (drafts.dup ? '<div class="card"><p style="margin-bottom:12px">A player named <b>' + esc(drafts.dup.name) + '</b> is already in game ' + esc(drafts.dup.code) + '. Is that you?</p>' +
+        '<div style="display:flex;flex-direction:column;gap:8px"><button id="claimBtn" class="btn good">Yes, that&rsquo;s me &mdash; rejoin</button><button id="notMeBtn" class="btn sm">No, I&rsquo;ll use another name</button></div></div>' : '') +
+      (savedCode && !drafts.dup ? '<div style="background:#1E2A22;border:1px solid #2C4A37;border-radius:14px;padding:10px 12px 10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><p style="font-size:14px;font-weight:600">Game ' + esc(savedCode) + ' is still going</p><p style="font-size:13px;color:var(--mute)">Jump back in' + (drafts.name ? ' as ' + esc(drafts.name) : '') + '</p></div><button id="rejoinBtn" class="btn good sm" style="width:auto">Rejoin</button></div>' : '') +
+      '<div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px">' +
+      '<div><label class="lbl" for="name">Your name</label><input class="field" type="text" id="name" maxlength="16" autocomplete="off" placeholder="Name"></div>' +
+      '<div><label class="lbl" for="code">Game code</label><input class="field codefield" type="text" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD"></div></div>';
+    var bar = '<button id="joinBtn" class="btn pri">Join game</button><button id="newBtn" class="btn">Host a new game</button><button id="rulesBtn" class="btn ghost">How to play</button>';
+    return screen('', main, bar);
+  }
+
+  function lobbyScreen(s) {
+    var host = s.players.filter(function (p) { return p.id === s.hostId; })[0];
+    var enough = s.players.length >= s.minPlayers;
+    var qr = qrSvg(joinLink(s.code));
+    var main = '<div class="card" style="display:flex;align-items:center;gap:16px">' +
+      (qr ? '<div class="qr" role="img" aria-label="QR code to join game ' + esc(s.code) + '">' + qr + '</div>' : '') +
+      '<div style="flex:1;min-width:0"><p class="lbl">Game code</p><p class="bigcode">' + esc(s.code) + '</p><p style="font-size:13px;color:var(--mute)">Friends scan the code, or open this page and type it in.</p></div></div>' +
+      '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Players</span><span class="sub">' + s.players.length + ' joined &middot; ' + s.minPlayers + ' needed</span></div>' +
+      s.players.map(function (p) {
+        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' &middot; you' : 'You') : '') + '</span></div>';
+      }).join('') + '</div>' +
+      (s.isHost ? '<button class="toggle" id="hardBtn" aria-pressed="' + !!drafts.hard + '"><span><b>Hard mode</b><small>Clues can&rsquo;t hint at letters, length, syllables or rhymes</small></span><span class="sw' + (drafts.hard ? ' on' : '') + '"><i></i></span></button>' : '') +
+      preloadCard(s);
+    var bar = s.isHost
+      ? '<button id="startBtn" class="btn pri"' + (enough ? '' : ' disabled') + '>' + (enough ? 'Start game' : 'Need ' + s.minPlayers + ' players to start') + '</button>'
+      : '<p class="hint" style="padding:14px 0">Waiting for ' + esc(host ? host.name : 'the host') + ' to start&hellip;</p>';
+    return screen(topBar(s), main, bar);
+  }
+
+  // ----- Write -----
+  function drawPhase(s) {
+    var main = '', bar = '';
+    var left = s.needCount - s.doneCount;
+    if (!s.hasWord) {
+      main = '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">' + device('get') +
+        '<p class="hint" style="font-size:15px">Everyone writes at the same time.<br>Press the red key to get your word.</p></div>';
+      bar = whoRow(s, plural(s.doneCount, 'clue') + ' in') + '<button class="btn pri" id="getBtn">Get my word</button>';
+    } else if (!s.myClue || (editing && s.canEditClue)) {
+      var ed = !!s.myClue;
+      main = '<div class="hero">' + device('word', s.myWord) + '</div>' +
+        '<div class="heroMini" style="display:none;align-items:center;gap:12px">' + miniWord(s.myWord) + '<p style="font-size:13px;color:var(--mute)">Hold to peek at your word</p></div>' +
+        '<div class="hero" style="display:flex;align-items:center;justify-content:center;gap:12px"><p style="font-size:14px;color:var(--soft)">Hold the red key to see your word</p>' +
+        (ed ? '' : '<button class="btn sm" id="swapBtn" style="width:auto;height:36px;padding:0 10px;font-size:14px">' + I.swap + 'New word</button>') + '</div>' +
+        '<div class="card" style="padding:14px"><label class="lbl" for="clue">' + (ed ? 'Edit your clue' : 'Your clue') + (s.hard ? ' &middot; hard mode' : '') + '</label>' +
+        '<textarea class="field" id="clue" maxlength="280" placeholder="Describe it without saying it"></textarea></div>';
+      bar = (ed ? '<div class="row2"><button class="btn" id="cancelClueBtn">Cancel</button><button class="btn pri" id="saveClueBtn">Save clue</button></div>'
+                : whoRow(s, plural(s.doneCount, 'clue') + ' in') + '<button class="btn pri" id="clueBtn">Send clue</button>');
+    } else {
+      main = device('sent', '', { sm: true }) +
+        '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="lbl">Your clue</span>' +
+        (s.canEditClue ? '<button class="btn ghost" id="editClueBtn" style="width:auto;height:32px;padding:0 4px;font-size:14px">' + I.edit + 'Edit</button>' : '') + '</div>' +
+        '<p style="font-size:18px">' + esc(s.myClue) + '</p></div>' + statusList(s);
+      bar = '<p class="hint">' + (left > 0 ? 'Waiting on ' + esc(waitingNames(s)) + '&hellip;' : 'Everyone is in.') + '</p>' +
+        (s.isHost && s.canBegin ? armBtn('beginBtn', 'begin', 'Start answering now', 'Tap again to start without them', '') : '');
+    }
+    return screen(topBar(s) + steps(s), main, bar);
+  }
+
+  // ----- Answer -----
+  function myClueMini(s) {
+    if (!s.myClue || !s.canEditClue) return '';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:2px 4px"><p style="flex:1;min-width:0;font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Your clue: ' + esc(s.myClue) + '</p>' +
+      '<button class="btn ghost" id="editClueBtn" style="width:auto;height:32px;padding:0 4px;font-size:14px">' + I.edit + 'Edit</button></div>';
+  }
+  function guessPhase(s) {
+    var main = '', bar = '';
+    if (!s.inRound) {
+      main = '<div class="card center" style="margin-top:30px"><p class="h" style="font-size:22px;font-weight:700;margin-bottom:6px">You&rsquo;re in next round</p><p style="color:var(--mute)">You joined part-way through. Sit tight &mdash; you&rsquo;ll play from the next round.</p></div>' + preloadCard(s);
+      bar = s.isHost ? armBtn('revealBtn', 'reveal', 'Move on to judging', 'Tap again to move on', '') : '';
+      return screen(topBar(s) + steps(s), main, bar);
+    }
+    if (editing && s.canEditClue) {
+      main = '<div class="card" style="padding:14px"><label class="lbl" for="clue">Edit your clue' + (s.hard ? ' &middot; hard mode' : '') + '</label><textarea class="field" id="clue" maxlength="280"></textarea></div>' +
+        '<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' + miniWord(s.myWord) + '<p style="font-size:13px;color:var(--mute)">Hold to peek at your word</p></div>';
+      bar = '<div class="row2"><button class="btn" id="cancelClueBtn">Cancel</button><button class="btn pri" id="saveClueBtn">Save clue</button></div>';
+      return screen(topBar(s) + steps(s), main, bar);
+    }
+    var n = s.toGuess.length;
+    if (!n) {
+      main = '<div class="card center" style="margin-top:30px"><p style="color:var(--mute)">There are no other clues to answer this round.</p></div>' + myClueMini(s);
+      bar = s.isHost ? armBtn('revealBtn', 'reveal', 'Move on to judging', 'Tap again to move on', '') : '';
+      return screen(topBar(s) + steps(s), main, bar);
+    }
+    if (s.mySub) {
+      var left = s.needCount - s.doneCount;
+      main = '<div class="center" style="display:flex;flex-direction:column;gap:10px;padding-top:12px"><div class="bigcheck">' + I.bigcheck + '</div>' +
+        '<h2 class="h" style="font-size:26px;font-weight:700">You&rsquo;re locked in</h2>' +
+        '<p style="color:var(--mute)">' + (left > 0 ? 'Waiting on ' + esc(waitingNames(s)) + '. We&rsquo;ll buzz you when it&rsquo;s time.' : 'Everyone is in.') + '</p></div>' +
+        statusList(s) + preloadCard(s);
+      bar = '<button class="btn" id="unlockBtn">Change my answers</button>' +
+        (s.isHost && left > 0 ? armBtn('revealBtn', 'reveal', 'Move on without them', 'Tap again to move on', 'ghost') : '');
+      return screen(topBar(s) + steps(s), main, bar);
+    }
+    if (gi >= n) gi = n - 1; if (gi < 0) gi = 0;
+    var c = s.toGuess[gi], used = 0, answered = 0;
+    s.toGuess.forEach(function (x) { if (drafts.wagers[x.id]) used++; if ((drafts.answers[x.id] || '').trim()) answered++; });
+    var chk = !!drafts.wagers[c.id], canW = chk || used < s.wagerLimit;
+    var dots = s.toGuess.map(function (x, i) { return '<i class="' + (i === gi ? 'c' : ((drafts.answers[x.id] || '').trim() ? 'a' : '')) + '"></i>'; }).join('');
+    var prev = s.toGuess[gi - 1], next = s.toGuess[gi + 1];
+    main = '<div style="display:flex;align-items:center;justify-content:space-between"><h2 class="h" style="font-size:22px;font-weight:700">Clue ' + (gi + 1) + ' of ' + n + '</h2><div class="pg" aria-label="' + answered + ' of ' + n + ' answered">' + dots + '</div></div>' +
+      '<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:16px">' +
+      '<div style="display:flex;align-items:center;gap:10px">' + av(c.id, c.name) + '<span style="font-weight:600">' + esc(c.name) + '&rsquo;s clue</span>' + (c.edited ? '<span class="tag ed">Edited</span>' : '') + '</div>' +
+      '<p class="h bigq">' + esc(c.clue) + '</p>' +
+      '<div><label class="lbl" for="ans_' + esc(c.id) + '">Your answer</label><input class="field ans" type="text" id="ans_' + esc(c.id) + '" data-g="' + esc(c.id) + '" maxlength="40" autocomplete="off" autocapitalize="none" enterkeyhint="' + (next ? 'next' : 'done') + '" placeholder="Type your guess"></div>' +
+      '<button class="toggle wgtog" data-g="' + esc(c.id) + '" aria-pressed="' + chk + '"' + (canW ? '' : ' disabled') + '><span><b>Wager a chip</b><small>' +
+      (s.wagerLimit < 1 ? 'You need a chip to wager' : (canW ? '+2 if right &middot; &minus;1 if wrong' : 'No chips left to wager')) + '</small></span><span class="sw' + (chk ? ' on' : '') + '"><i></i></span></button></div>' +
+      '<div class="row2">' + (prev ? '<button class="btn sm" id="prevBtn">' + I.left + esc(prev.name) + '&rsquo;s</button>' : '<span></span>') +
+      (next ? '<button class="btn sm" id="nextClueBtn">' + esc(next.name) + '&rsquo;s' + I.right + '</button>' : '<span></span>') + '</div>' + myClueMini(s);
+    bar = '<p class="hint">You can change answers until everyone locks in</p>' +
+      '<button class="btn pri" id="guessBtn">' + I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ' &middot; ' + plural(used, 'wager') : '') + '</button>';
+    return screen(topBar(s) + steps(s), main, bar);
+  }
+
+  // ----- Judge -----
+  function judgePhase(s) {
+    var main = '', bar = '', j = s.myJudge;
+    if (j) {
+      var right = j.rows.filter(function (e) { return e.ok; }).length, all = j.rows.length > 0 && right === j.rows.length;
+      main = '<div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 14px">' + miniWord(j.word) +
+        '<div style="flex:1;min-width:0"><p class="lbl">Your clue</p><p style="font-size:14px;margin-top:2px">' + esc(j.clue) + '</p></div></div>' +
+        '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Their answers</span><span class="sub">Pre-marked for you</span></div>' +
+        (j.rows.length ? j.rows.map(function (e) {
+          return '<div class="li" style="flex-direction:column;align-items:stretch;gap:10px"><div style="display:flex;align-items:center;gap:12px">' + av(e.id, e.name) +
+            '<div style="flex:1;min-width:0"><p class="sub">' + esc(e.name) + (e.wager ? '<span class="tag wg">Wager</span>' : '') + '</p><p style="font-size:18px;font-weight:600;word-wrap:break-word">' + (e.answered ? esc(e.guess) : '<span style="color:var(--mute)">(no answer)</span>') + '</p></div></div>' +
+            '<div class="seg"><button class="markBtn' + (e.ok ? ' y' : '') + '" data-id="' + esc(e.id) + '" data-ok="1" aria-pressed="' + e.ok + '">' + I.check + 'Right</button>' +
+            '<button class="markBtn' + (!e.ok ? ' n' : '') + '" data-id="' + esc(e.id) + '" data-ok="0" aria-pressed="' + !e.ok + '">' + I.x + 'Wrong</button></div></div>';
+        }).join('') : '<div class="li"><span class="sub">No one answered your clue.</span></div>') + '</div>';
+      bar = '<p class="hint">' + (all ? 'Everyone got it, so you score nothing' : right + ' right &middot; you&rsquo;ll score <b style="color:var(--ink)">+' + right + '</b>') + '</p><button id="awardBtn" class="btn pri">Award points</button>';
+    } else {
+      var js = s.judgeStatus || [], mine = js.filter(function (x) { return x.id === s.me; })[0];
+      var waiting = js.filter(function (x) { return !x.awarded; });
+      main = '<div class="center" style="display:flex;flex-direction:column;gap:8px;padding-top:12px">' +
+        (mine && mine.awarded ? '<div class="bigcheck">' + I.bigcheck + '</div><h2 class="h" style="font-size:26px;font-weight:700">Points awarded</h2>' : '<h2 class="h" style="font-size:26px;font-weight:700">Writers are judging</h2>') +
+        '<p style="color:var(--mute)">' + (s.inRound ? 'Each writer is checking the answers to their own clue.' : 'You joined part-way through &mdash; you&rsquo;ll play next round.') + '</p></div>' +
+        '<div class="list">' + js.map(function (x) {
+          return '<div class="li">' + av(x.id, x.name) + '<span class="nm">' + esc(x.name) + (x.id === s.me ? ' <span class="sub">(you)</span>' : '') + '</span>' +
+            (x.awarded ? '<span class="ok" style="display:inline-flex;align-items:center;gap:6px;font-size:14px">' + I.check + 'Done</span>' : '<span style="font-size:14px;color:var(--gold)">Judging&hellip;</span>') + '</div>';
+        }).join('') + '</div>' + preloadCard(s);
+      bar = '<p class="hint">' + (waiting.length ? 'Waiting on ' + esc(waiting.map(function (x) { return x.id === s.me ? 'you' : x.name; }).join(', ')) + '&hellip;' : 'All done.') + '</p>' +
+        (s.canAwardAll ? armBtn('awardAllBtn', 'awardall', 'Award the rest for them', 'Tap again &mdash; uses the suggested marks', 'ghost') : '');
+    }
+    return screen(topBar(s) + steps(s), main, bar);
+  }
+
+  // ----- Reveal -----
+  function likeList(r, kind, clue, target) {
+    return (r.likes || []).filter(function (l) { return l.kind === kind && l.clue === clue && l.target === target; });
+  }
+  function likeBtn(s, kind, clue, target, own, label) {
+    var ls = likeList(s.result, kind, clue, target), mine = ls.some(function (l) { return l.from === s.me; });
+    if (own) return ls.length ? '<span class="likes">' + I.up + ls.length + '</span>' : '';
+    return '<button class="like likeBtn' + (mine ? ' on' : '') + '" aria-pressed="' + mine + '" aria-label="Like ' + esc(label) + '" data-kind="' + kind + '" data-clue="' + esc(clue) + '" data-target="' + esc(target) + '">' + I.up + (ls.length || '') + '</button>';
+  }
+  function entryRow(s, c, e, cls, live) {
+    return '<div class="li ' + cls + '">' + av(e.id, e.name) + '<div style="flex:1;min-width:0"><p class="sub">' + esc(e.name) + (e.wager ? '<span class="tag wg">' + (e.saved ? 'Wager kept' : 'Wager') + '</span>' : '') + '</p>' +
+      '<p style="font-size:17px;font-weight:600;word-wrap:break-word">' + (e.answered ? esc(e.guess) : '<span style="color:var(--mute)">(no answer)</span>') + '</p></div>' +
+      '<span class="delta ' + (e.ok ? 'ok' : 'no') + '">' + sgn(e.delta) + '</span>' +
+      (live && e.answered ? likeBtn(s, 'answer', c.giverId, e.id, e.id === s.me, e.name + '’s answer') : '') + '</div>';
+  }
+  function revealPhase(s) {
+    var r = s.result, units = revealUnits(r), N = r.clues.length;
+    var lim = revealLimit(s), shown = Math.min(revealIdx, units.length), done = shown >= units.length;
+    var fresh = !done && rvPlayed !== shown - 1; rvFresh = fresh;
+    rvPlayed = shown - 1;
+    if (done && resultsOpen) return resultsScreen(s);
+    // Which clue is on stage: the one being revealed, or the last one finished.
+    var cur = -1; for (var k = 0; k < N; k++) if (groupEnd(r, k) < shown) cur = k;
+    var main = '', bar = '';
+    if (cur >= 0) {
+      var c = r.clues[cur], base = groupEnd(r, cur), cdone = shown >= groupEnd(r, cur + 1);
+      var inner = '';
+      c.entries.forEach(function (e, ei) {
+        var ui = base + 1 + ei;
+        if (ui < shown) inner += entryRow(s, c, e, 'rv' + (fresh && ui === shown - 1 ? ' new' : ''), cdone);
+      });
+      var wordShown = cdone, wi = base + 1 + c.entries.length;
+      main += '<div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl">Clue ' + (cur + 1) + ' of ' + N + ' &middot; ' + esc(c.giverName) + '</span>' +
+        (wordShown ? '<span style="font-size:13px;color:var(--mute)">Writer scores <b class="' + (c.giverPts ? 'ok' : '') + '">+' + c.giverPts + '</b></span>' : '') + '</div>' +
+        '<div class="card' + (fresh && shown - 1 === base ? ' rv new' : '') + '" style="display:flex;flex-direction:column;gap:12px">' +
+        '<div style="display:flex;align-items:flex-start;gap:10px"><p class="h" style="flex:1;font-size:21px;font-weight:600;line-height:1.3;word-wrap:break-word">' + esc(c.clue) + '</p>' +
+        (cdone ? likeBtn(s, 'clue', c.giverId, '', c.giverId === s.me, esc(c.giverName) + '’s clue') : '') + '</div>' +
+        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 24) + '</div>' : '') +
+        (inner ? '<div>' + inner + '</div>' : '') +
+        (wordShown && c.allCorrect ? '<p class="hint">Everyone got it, so the writer scores nothing.</p>' : '') + '</div>';
+      // earlier clues, folded away
+      var earlier = '';
+      for (var e2 = cur - 1; e2 >= 0; e2--) {
+        var pc = r.clues[e2];
+        earlier += '<details class="earlier"><summary>' + av(pc.giverId, pc.giverName) + '<span style="flex:1;min-width:0;font-weight:600;font-size:14px">' + esc(pc.giverName) + '&rsquo;s clue</span><span class="wordchip">' + esc(pc.word) + '</span></summary>' +
+          '<div style="padding:10px 0"><div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:4px"><p style="flex:1;font-size:15px">' + esc(pc.clue) + '</p>' + likeBtn(s, 'clue', pc.giverId, '', pc.giverId === s.me, esc(pc.giverName) + '’s clue') + '</div>' +
+          pc.entries.map(function (e) { return entryRow(s, pc, e, '', true); }).join('') + '</div></details>';
+      }
+      if (earlier) main += '<p class="lbl" style="margin-top:4px">Earlier clues</p>' + earlier;
+    } else {
+      main = '<div class="center" style="padding-top:20px"><h2 class="h" style="font-size:26px;font-weight:700">Time for the reveal</h2><p style="color:var(--mute);margin-top:6px">Each writer shows the answers to their own clue, one at a time.</p></div>';
+    }
+    if (!done) {
+      if (shown < lim) bar = '<button class="btn ghost" id="skipBtn">Skip animation</button>';
+      else {
+        var nxt = r.clues[s.rvc];
+        if (nxt && nxt.giverId === s.me) bar = '<p class="hint">Everyone&rsquo;s waiting on you</p><button id="revNextBtn" class="btn pri">Reveal answers to my clue</button>';
+        else if (nxt) bar = '<div class="upnext">' + av(nxt.giverId, nxt.giverName) + '<p style="flex:1">Up next: <b>' + esc(nxt.giverName) + '&rsquo;s clue</b></p><span class="sub" style="font-size:13px;color:var(--mute)">' + esc(nxt.giverName) + ' taps when ready</span></div>' +
+          (s.isHost ? armBtn('revForBtn', 'revfor', 'Reveal it for ' + esc(nxt.giverName), 'Tap again to reveal for them', 'ghost') : '');
+      }
+    } else bar = '<button class="btn pri" id="resultsBtn">See round results</button>';
+    return screen(topBar(s) + steps(s), main, bar);
+  }
+
+  function standings(s, deltas, tags) {
+    var sorted = s.players.slice().sort(function (a, b) { return b.score - a.score; });
+    return '<div class="list">' + sorted.map(function (p, i) {
+      var d = deltas ? deltas[p.name] : undefined;
+      return '<div class="li"><span style="width:18px;color:var(--mute);font-weight:700">' + (i + 1) + '</span>' + av(p.id, p.name) +
+        '<span class="nm">' + esc(p.name) + (p.id === s.me ? ' <span class="sub">(you)</span>' : '') + (tags && p.id === s.hostId ? '<span class="tag ld">Leader</span>' : '') + '</span>' +
+        (d !== undefined ? '<span class="delta ' + (d > 0 ? 'ok' : (d < 0 ? 'no' : '')) + '" style="font-size:14px">' + sgn(d) + '</span>' : '') +
+        '<span class="pill" style="min-width:58px;justify-content:center"><span class="dot"></span>' + p.score + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function poolCard(s) {
+    var pct = Math.max(0, Math.min(100, Math.round(s.pool)));
+    return '<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><span class="lbl">Chips left in the center</span><b>' + s.pool + ' / 100</b></div>' +
+      '<div class="meter"><i style="width:' + pct + '%"></i></div><p style="font-size:13px;color:var(--mute);margin-top:10px">The game ends when the center runs out.</p></div>';
+  }
+  function headline(s) {
+    var sorted = s.players.slice().sort(function (a, b) { return b.score - a.score; });
+    if (!sorted.length) return '';
+    var top = sorted.filter(function (p) { return p.score === sorted[0].score; });
+    if (top.length > 1) return 'Tied at the top';
+    return (top[0].id === s.me ? 'You lead' : esc(top[0].name) + ' leads') + ' with ' + top[0].score;
+  }
+  function resultsScreen(s) {
+    var r = s.result, deltas = {};
+    (r.totals || []).forEach(function (t) { deltas[t.name] = t.delta; });
+    var host = s.players.filter(function (p) { return p.id === s.hostId; })[0];
+    var main = '<div><p class="lbl">Round ' + s.round + ' complete</p><h2 class="h" style="font-size:28px;font-weight:700;margin-top:4px">' + headline(s) + '</h2></div>' +
+      standings(s, deltas) + poolCard(s) +
+      '<div class="row2"><button class="btn sm" id="backCluesBtn">' + I.left + 'This round</button><button class="btn sm" id="histBtn">Game history</button></div>' + preloadCard(s);
+    var bar = s.isHost ? '<button id="nextBtn" class="btn pri">' + (s.pool <= 0 ? 'Finish game' : 'Start round ' + (s.round + 1)) + '</button>'
+      : '<p class="hint" style="padding:14px 0">Waiting for ' + esc(host ? host.name : 'the leader') + ' to start the next round&hellip;</p>';
+    return screen(topBar(s) + steps(s), main, bar);
+  }
+
+  function endedScreen(s) {
+    var sorted = s.players.slice().sort(function (a, b) { return b.score - a.score; });
+    var top = sorted.length ? sorted[0].score : 0, winners = sorted.filter(function (p) { return p.score === top && top > 0; });
+    var head = winners.length === 1 ? (winners[0].id === s.me ? 'You win!' : esc(winners[0].name) + ' wins!') : (winners.length ? 'It&rsquo;s a tie!' : 'Game over');
+    var main = '<div class="center" style="padding-top:8px">' + device('idle', '', { sm: true, text: 'THE END' }) + '<p class="lbl" style="margin-top:18px">Game over</p><h1 class="h" style="font-size:34px;font-weight:700;margin-top:4px">' + head + '</h1></div>' +
+      standings(s) + '<button class="btn" id="histBtn">Game history</button>';
+    return screen('', main, '<button id="doneBtn" class="btn pri">Back to start</button>');
+  }
+
+  function historyScreen() {
+    var h = historyData, b = '';
+    if (!h) b += '<p class="hint" style="padding:30px 0">Loading&hellip;</p>';
+    else if (!h.ok) b += '<div class="err">' + esc(h.err || 'Could not load the history.') + '</div>';
+    else if (!h.rounds.length) b += '<p class="hint" style="padding:30px 0">No finished rounds yet.</p>';
+    else {
+      var tl = 0; h.rounds.forEach(function (rd) { rd.clues.forEach(function (c) { tl += c.likes || 0; c.entries.forEach(function (e) { tl += e.likes || 0; }); }); });
+      b += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px"><span class="lbl">Total likes</span><span class="likes" style="font-size:16px;color:#FFB49C">' + I.up + tl + '</span></div>';
+      h.rounds.slice().reverse().forEach(function (rd) {
+        b += '<p class="lbl" style="margin-top:6px">Round ' + rd.round + '</p>';
+        rd.clues.forEach(function (c) {
+          b += '<details class="earlier"><summary>' + av(c.giverId || c.giverName, c.giverName) + '<span style="flex:1;min-width:0;font-weight:600;font-size:14px">' + esc(c.giverName) + '&rsquo;s clue</span>' +
+            (c.likes ? '<span class="likes">' + I.up + c.likes + '</span>' : '') + '<span class="wordchip">' + esc(c.word) + '</span></summary>' +
+            '<div style="padding:10px 0"><p style="font-size:15px;margin-bottom:4px">' + esc(c.clue) + '</p>' +
+            c.entries.map(function (e) {
+              return '<div class="li"><div style="flex:1;min-width:0"><p class="sub">' + esc(e.name) + (e.wager ? '<span class="tag wg">Wager</span>' : '') + '</p><p style="font-weight:600">' + (e.answered ? esc(e.guess) : '<span style="color:var(--mute)">(no answer)</span>') + '</p></div>' +
+                (e.likes ? '<span class="likes">' + I.up + e.likes + '</span>' : '') + '<span class="' + (e.ok ? 'ok' : 'no') + '" style="font-weight:700;font-size:14px">' + (e.ok ? 'Right' : 'Wrong') + '</span></div>';
+            }).join('') + '</div></details>';
+        });
+      });
+    }
+    return screen(pageTop('Game history'), b, '');
+  }
+
+  function joinScreen(s) {
+    var qr = qrSvg(joinLink(s.code));
+    var main = '<div class="center" style="display:flex;flex-direction:column;gap:14px;padding-top:10px"><p class="lbl">Game code</p><p class="bigcode" style="font-size:52px">' + esc(s.code) + '</p>' +
+      (qr ? '<div class="qr big" role="img" aria-label="QR code to join">' + qr + '</div>' : '<p class="hint">QR code unavailable. Share the code above.</p>') +
+      '<p style="color:var(--mute);font-size:14px">Scan to join, or open this page and type the code.</p></div>';
+    return screen(pageTop('Invite players'), main, '<button class="btn pri" id="backBtn2">Back to the game</button>');
+  }
+
+  function rulesScreen() { return screen(pageTop('How to play'), rulesHtml(), ''); }
+
+  function menuSheet(s) {
+    var o = '<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-label="Game menu"><div class="grab"></div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between"><div><p class="lbl">Game ' + esc(s.code) + (s.phase === 'lobby' ? '' : ' &middot; Round ' + s.round) + '</p><p class="h" style="font-size:22px;font-weight:700">' + (s.phase === 'lobby' ? 'Players' : 'Scores') + '</p></div>' +
+      '<button class="iconbtn" id="closeMenuBtn" aria-label="Close menu">' + I.close + '</button></div>' +
+      '<div class="sect">' + standings(s, null, true) + '</div>' +
+      (s.phase !== 'lobby' ? '<div class="sect">' + poolCard(s) + '</div>' : '') +
+      '<div class="sect" style="display:flex;flex-direction:column;gap:8px">' +
+      (s.phase !== 'lobby' ? '<button class="btn sm" id="histBtn">Game history</button>' : '') +
+      (s.isHost ? '<button class="btn sm" id="showJoinBtn">Invite players (code &amp; QR)</button>' : '') +
+      '<button class="btn sm" id="rulesBtn">How to play</button></div>';
+    if (s.isHost && s.players.length > 1) {
+      o += '<div class="sect"><p class="lbl">Leader tools</p><div class="list">' + s.players.filter(function (p) { return p.id !== s.me; }).map(function (p) {
+        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><button class="btn sm rmBtn" data-id="' + esc(p.id) + '" style="width:auto;height:36px;font-size:13px;padding:0 12px">Remove</button></div>';
+      }).join('') + '</div>' +
+        (s.phase === 'draw' && s.canBegin ? '<div style="margin-top:8px">' + armBtn('menuBeginBtn', 'mbegin', 'Start answering now', 'Tap again to start without them', 'sm') + '</div>' : '') +
+        (s.phase === 'guess' ? '<div style="margin-top:8px">' + armBtn('menuRevealBtn', 'mreveal', 'Move on to judging', 'Tap again to move on', 'sm') + '</div>' : '') +
+        (s.phase === 'reveal' && s.rvc < s.result.clues.length ? '<div style="margin-top:8px">' + armBtn('menuRevAllBtn', 'mrevall', 'Reveal the next clue', 'Tap again to reveal it', 'sm') + '</div>' : '') +
+        (s.phase !== 'lobby' ? '<div style="margin-top:8px">' + armBtn('endBtn', 'end', 'End the game for everyone', 'Tap again to end the game', 'sm') + '</div>' : '') + '</div>';
+    }
+    o += '<div class="sect">' + armBtn('leaveBtn', 'leave', 'Leave game', 'Tap again to leave', 'ghost') + '</div></div></div>';
+    return o;
+  }
+
+  function playScreen(s) {
+    if (s.phase === 'draw') return drawPhase(s);
+    if (s.phase === 'guess') return guessPhase(s);
+    if (s.phase === 'judge') return judgePhase(s);
+    if (s.phase === 'reveal') return revealPhase(s);
+    return '';
+  }
+
+  // ---------- render + wiring ----------
+  function render() {
+    var ae = document.activeElement, focusId = ae && ae.id ? ae.id : null;
+    var mainEl = $('main'), keepScroll = mainEl ? mainEl.scrollTop : 0, prevKey = render.key;
+    var app = $('app');
+    rvFresh = false;
+    var html, key;
+    if (view === 'rules') { html = rulesScreen(); key = 'rules'; }
+    else if (!S) { html = homeScreen(); key = 'home'; }
+    else if (view === 'history') { html = historyScreen(); key = 'history'; }
+    else if (view === 'join' && S.isHost && S.phase !== 'ended') { html = joinScreen(S); key = 'join'; }
+    else if (S.phase === 'lobby') { html = lobbyScreen(S); key = 'lobby'; }
+    else if (S.phase === 'ended') { html = endedScreen(S); key = 'ended'; }
+    else { html = playScreen(S); key = S.phase + S.round + (resultsOpen ? 'r' : '') + (S.phase === 'guess' ? (S.mySub ? 's' : gi) : '') + (editing ? 'e' : ''); }
+    var openDet = [];
+    var dets = document.querySelectorAll('details'); for (var di = 0; di < dets.length; di++) if (dets[di].open) openDet.push(di);
+    if (S && menuOpen && !view && S.phase !== 'ended') html += menuSheet(S);
+    app.innerHTML = html;
+    render.key = key;
+    if (key === prevKey) {
+      var d2 = document.querySelectorAll('details'); openDet.forEach(function (i) { if (d2[i]) d2[i].open = true; });
+      var m2 = $('main'); if (m2) m2.scrollTop = keepScroll;
+    }
+    wire();
+    if (peeking) peek(false);
+    ['name', 'code', 'clue'].forEach(function (id) { var el = $(id); if (el && drafts[id]) el.value = drafts[id]; });
+    var an = document.querySelectorAll('.ans');
+    for (var ai = 0; ai < an.length; ai++) { var v = drafts.answers[an[ai].getAttribute('data-g')]; if (v) an[ai].value = v; }
+    if (focusId && $(focusId) && (focusId === 'name' || focusId === 'code' || focusId === 'clue' || focusId.indexOf('ans_') === 0)) {
+      var f = $(focusId); f.focus(); try { f.setSelectionRange(f.value.length, f.value.length); } catch (e) {}
+    }
+    setTyping();
+    if (rvFresh) {
+      var nw = document.querySelector('.rv.new');
+      if (nw && nw.scrollIntoView) { try { nw.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} }
+    }
+  }
+  // While typing a clue, fold the big device away so the keyboard has room.
+  function setTyping() {
+    var a = document.activeElement, t = !!(a && a.id === 'clue');
+    var app = $('app'); if (app && app.classList) app.classList.toggle('typing', t);
+  }
+
+  function wire() {
+    ['name', 'code', 'clue'].forEach(function (id) {
+      var el = $(id); if (!el) return;
+      el.addEventListener('input', function () {
+        if (id === 'code') el.value = el.value.toUpperCase().replace(/[^A-Z]/g, '');
+        drafts[id] = el.value;
+      });
+      if (id === 'clue') { el.addEventListener('focus', setTyping); el.addEventListener('blur', function () { setTimeout(setTyping, 50); }); }
+    });
+    var ans = document.querySelectorAll('.ans');
+    for (var ai = 0; ai < ans.length; ai++) (function (el) {
+      var gid = el.getAttribute('data-g');
+      el.addEventListener('input', function () {
+        var had = !!(drafts.answers[gid] || '').trim();
+        drafts.answers[gid] = el.value;
+        if (had !== !!el.value.trim()) updateGuessBar();
+      });
+      el.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        if (S && gi < S.toGuess.length - 1) { gi++; render(); var nx = document.querySelector('.ans'); if (nx) nx.focus(); }
+        else { el.blur(); }
+      });
+    })(ans[ai]);
+    var wcs = document.querySelectorAll('.wgtog');
+    for (var wi = 0; wi < wcs.length; wi++) (function (el) {
+      el.addEventListener('click', function () { var g = el.getAttribute('data-g'); drafts.wagers[g] = !drafts.wagers[g]; render(); });
+    })(wcs[wi]);
+    on('hardBtn', function () { drafts.hard = !drafts.hard; render(); });
+    var hb = document.querySelectorAll('.peekBtn');
+    for (var hi = 0; hi < hb.length; hi++) (function (b) {
+      ['mousedown', 'touchstart'].forEach(function (ev) { b.addEventListener(ev, function (e) { if (e.cancelable) e.preventDefault(); peek(true); }); });
+      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) { b.addEventListener(ev, function () { peek(false); }); });
+      b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    })(hb[hi]);
+
+    on('joinBtn', function (b) {
+      var n = (drafts.name || '').trim(), c = (drafts.code || '').trim().toUpperCase();
+      if (!n) { toast('Enter your name first.'); return; }
+      if (c.length !== 4) { toast('Enter the 4-letter game code.'); return; }
+      drafts.name = n; act(b, 'Joining...', 'join', { name: n, code: c });
+    });
+    on('newBtn', function (b) {
+      var n = (drafts.name || '').trim();
+      if (!n) { toast('Enter your name first.'); return; }
+      drafts.name = n; act(b, 'Creating...', 'create', { name: n });
+    });
+    on('claimBtn', function (b) {
+      var d = drafts.dup; if (!d) return;
+      act(b, 'Rejoining...', 'join', { name: d.name, code: d.code, claim: true });
+    });
+    on('notMeBtn', function () { drafts.dup = null; render(); });
+    on('rejoinBtn', function (b) {
+      var n = (drafts.name || '').trim() || 'Player';
+      drafts.name = n; act(b, 'Rejoining...', 'join', { name: n, code: savedCode });
+    });
+    on('rulesBtn', function () { menuOpen = false; view = 'rules'; render(); });
+    on('startBtn', function (b) { act(b, 'Starting...', 'start', { hard: !!drafts.hard }); });
+    on('redBtn', function (b) { act(b, 'WAIT', 'draw'); });
+    on('getBtn', function (b) { var k = $('redBtn'); if (k) k.classList.add('busy'); act(b, 'Getting your word...', 'draw'); });
+    on('swapBtn', function (b) { act(b, 'Swapping...', 'draw'); });
+    on('preBtn', function (b) { act(b, '...', 'preload'); });
+    on('clueBtn', function (b) {
+      var t = (drafts.clue || '').trim(); if (!t) { toast('Type a clue first.'); return; }
+      act(b, 'Sending...', 'clue', { clue: t });
+    });
+    on('editClueBtn', function () { editing = true; drafts.clue = S.myClue; render(); var c = $('clue'); if (c) c.focus(); });
+    on('cancelClueBtn', function () { editing = false; drafts.clue = ''; render(); });
+    on('saveClueBtn', function (b) {
+      var t = (drafts.clue || '').trim(); if (!t) { toast('Type a clue first.'); return; }
+      act(b, 'Saving...', 'editclue', { clue: t }, function () { editing = false; drafts.clue = ''; });
+    });
+    onArm('beginBtn', 'begin', function (b) { act(b, 'Starting...', 'begin'); });
+    on('prevBtn', function () { gi--; render(); });
+    on('nextClueBtn', function () { gi++; render(); });
+    on('guessBtn', function (b) {
+      var answers = {}, wagers = {}, any = false;
+      S.toGuess.forEach(function (c) {
+        var t = (drafts.answers[c.id] || '').trim();
+        if (!t) return;
+        answers[c.id] = t; any = true;
+        if (drafts.wagers[c.id]) wagers[c.id] = true;
+      });
+      if (!any) { toast('Type at least one answer first.'); return; }
+      act(b, 'Locking in...', 'guess', { answers: answers, wagers: wagers });
+    });
+    on('unlockBtn', function (b) {
+      act(b, 'Unlocking...', 'unlock', {}, function (r) {
+        drafts.answers = {}; drafts.wagers = {}; gi = 0;
+        Object.keys(r.myGuesses || {}).forEach(function (k) { drafts.answers[k] = r.myGuesses[k]; });
+        Object.keys(r.myWagers || {}).forEach(function (k) { drafts.wagers[k] = !!r.myWagers[k]; });
+      });
+    });
+    onArm('revealBtn', 'reveal', function (b) { act(b, 'Moving on...', 'reveal'); });
+    on('awardBtn', function (b) { act(b, 'Awarding...', 'award'); });
+    onArm('awardAllBtn', 'awardall', function (b) { act(b, 'Awarding...', 'awardall'); });
+    var mk = document.querySelectorAll('.markBtn');
+    for (var mi = 0; mi < mk.length; mi++) (function (b) {
+      b.addEventListener('click', function () {
+        if (b.getAttribute('aria-pressed') === 'true') return;
+        act(b, '...', 'mark', { target: b.getAttribute('data-id'), ok: b.getAttribute('data-ok') === '1' });
+      });
+    })(mk[mi]);
+    var tb = document.querySelectorAll('.likeBtn');
+    for (var ti = 0; ti < tb.length; ti++) (function (b) {
+      b.addEventListener('click', function (e) { e.preventDefault(); act(b, '...', 'like', { kind: b.getAttribute('data-kind'), clue: b.getAttribute('data-clue'), target: b.getAttribute('data-target') }); });
+    })(tb[ti]);
+    on('skipBtn', function () { revealIdx = revealLimit(S); stopReveal(); render(); });
+    on('revNextBtn', function (b) { act(b, 'Revealing...', 'revealnext', { idx: S.rvc }); });
+    onArm('revForBtn', 'revfor', function (b) { act(b, 'Revealing...', 'revealnext', { idx: S.rvc }); });
+    on('resultsBtn', function () { resultsOpen = true; render(); var m = $('main'); if (m) m.scrollTop = 0; });
+    on('backCluesBtn', function () { resultsOpen = false; render(); });
+    on('nextBtn', function (b) { act(b, 'Starting...', 'next'); });
+    on('histBtn', function () { menuOpen = false; view = 'history'; historyData = null; render(); loadHistory(); });
+    on('backBtn', function () { view = ''; render(); });
+    on('backBtn2', function () { view = ''; render(); });
+    on('menuBtn', function () { menuOpen = true; disarm(); render(); });
+    on('closeMenuBtn', function () { menuOpen = false; disarm(); render(); });
+    var scrim = $('scrim'); if (scrim) scrim.addEventListener('click', function (e) { if (e.target === scrim) { menuOpen = false; disarm(); render(); } });
+    on('showJoinBtn', function () { menuOpen = false; view = 'join'; render(); });
+    onArm('menuBeginBtn', 'mbegin', function (b) { menuOpen = false; act(b, 'Starting...', 'begin'); });
+    onArm('menuRevealBtn', 'mreveal', function (b) { menuOpen = false; act(b, 'Moving on...', 'reveal'); });
+    onArm('menuRevAllBtn', 'mrevall', function (b) { menuOpen = false; act(b, 'Revealing...', 'revealnext', { idx: S.rvc }); });
+    onArm('endBtn', 'end', function (b) { menuOpen = false; act(b, 'Ending...', 'end'); });
+    onArm('leaveBtn', 'leave', function (b) {
+      b.classList.add('busy'); b.disabled = true; b.innerHTML = 'Leaving...';
+      run('leave', {}, function () { leave(''); });
+    });
+    on('doneBtn', function () { leave(''); });
+    var rms = document.querySelectorAll('.rmBtn');
+    for (var ri = 0; ri < rms.length; ri++) (function (b) {
+      b.addEventListener('click', function () {
+        if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Tap to confirm'; b.classList.add('warn'); return; }
+        act(b, 'Removing...', 'remove', { target: b.getAttribute('data-id') });
+      });
+    })(rms[ri]);
+  }
+  // Keep the lock-in button's count current while typing, without redrawing the input.
+  function updateGuessBar() {
+    var b = $('guessBtn'); if (!b || !S) return;
+    var used = 0, answered = 0;
+    S.toGuess.forEach(function (x) { if (drafts.wagers[x.id]) used++; if ((drafts.answers[x.id] || '').trim()) answered++; });
+    b.innerHTML = I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ' &middot; ' + plural(used, 'wager') : '');
+    var dots = document.querySelectorAll('.pg i');
+    S.toGuess.forEach(function (x, i) { if (dots[i] && i !== gi) dots[i].className = (drafts.answers[x.id] || '').trim() ? 'a' : ''; });
+  }
+  function on(id, fn) { var el = $(id); if (el) el.addEventListener('click', function () { fn(el); }); }
+
+  // ---------- start ----------
+  baseUrl = location.origin + location.pathname;
+  render();
+  try {
+    var qc = new URLSearchParams(location.search).get('code');
+    var c = qc ? String(qc).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4) : '';
+    if (c && !S) { drafts.code = c; render(); }
+  } catch (e) {}
+  if (savedCode) {
+    run('state', { code: savedCode }, function (r) {
+      if (r.ok && r.phase) setState(r);
+      else if (r.gone) { savedCode = ''; store('wg_code', null); render(); }
+    });
+  }
+})();
+</script>
+</body>
+</html>
