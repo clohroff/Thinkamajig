@@ -247,7 +247,8 @@
     lock: ic('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', 18),
     swap: ic('<path d="M4 9h13l-3-3M20 15H7l3 3"/>', 16),
     close: ic('<path d="M6 6l12 12M18 6L6 18"/>'),
-    edit: ic('<path d="M4 20h4L19 9l-4-4L4 16v4z"/>', 16)
+    edit: ic('<path d="M4 20h4L19 9l-4-4L4 16v4z"/>', 16),
+    share: ic('<path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>', 18)
   };
 
   // ---------- avatars ----------
@@ -270,6 +271,27 @@
       if (m && svg.indexOf('viewBox') < 0) svg = svg.replace('<svg', '<svg viewBox="0 0 ' + m[1] + ' ' + m[2] + '"');
       return svg;
     } catch (e) { return ''; }
+  }
+
+  // Invite friends: the phone's share sheet (Messages, WhatsApp...), falling back to a text message.
+  function inviteText(code) { return 'Join my Thinkamajig game! Code ' + code + (joinLink(code) ? ': ' + joinLink(code) : ''); }
+  function shareInvite(btn) {
+    if (!S) return;
+    var code = S.code, text = inviteText(code), orig = btn.innerHTML;
+    var done = function () { btn.classList.remove('busy'); btn.disabled = false; btn.innerHTML = orig; };
+    var sms = function () {
+      var a = document.createElement('a');
+      a.href = 'sms:?&body=' + encodeURIComponent(text); a.target = '_top'; a.rel = 'noopener';
+      document.body.appendChild(a); a.click(); a.remove(); done();
+    };
+    btn.classList.add('busy'); btn.disabled = true; btn.innerHTML = 'Opening...';
+    try {
+      if (navigator.share) {
+        var p = navigator.share({ title: 'Thinkamajig', text: 'Join my Thinkamajig game! Code ' + code, url: joinLink(code) || undefined });
+        if (p && p.then) { p.then(done, function (e) { if (e && e.name === 'AbortError') done(); else sms(); }); return; }
+      }
+    } catch (e) {}
+    sms();
   }
 
   // ---------- server calls ----------
@@ -532,6 +554,7 @@
     var main = '<div class="card" style="display:flex;align-items:center;gap:16px">' +
       (qr ? '<div class="qr" role="img" aria-label="QR code to join game ' + esc(s.code) + '">' + qr + '</div>' : '') +
       '<div style="flex:1;min-width:0"><p class="lbl">Game code</p><p class="bigcode">' + esc(s.code) + '</p><p style="font-size:13px;color:var(--mute)">Friends scan the code, or open this page and type it in.</p></div></div>' +
+      '<button class="btn" id="shareBtn">' + I.share + 'Invite by text</button>' +
       '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Players</span><span class="sub">' + s.players.length + ' joined &middot; ' + s.minPlayers + ' needed</span></div>' +
       s.players.map(function (p) {
         return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' &middot; you' : 'You') : '') + '</span></div>';
@@ -795,7 +818,7 @@
     var main = '<div class="center" style="display:flex;flex-direction:column;gap:14px;padding-top:10px"><p class="lbl">Game code</p><p class="bigcode" style="font-size:52px">' + esc(s.code) + '</p>' +
       (qr ? '<div class="qr big" role="img" aria-label="QR code to join">' + qr + '</div>' : '<p class="hint">QR code unavailable. Share the code above.</p>') +
       '<p style="color:var(--mute);font-size:14px">Scan to join, or open this page and type the code.</p></div>';
-    return screen(pageTop('Invite players'), main, '<button class="btn pri" id="backBtn2">Back to the game</button>');
+    return screen(pageTop('Invite players'), main, '<button class="btn" id="shareBtn">' + I.share + 'Invite by text</button><button class="btn pri" id="backBtn2">Back to the game</button>');
   }
 
   function rulesScreen() { return screen(pageTop('How to play'), rulesHtml(), ''); }
@@ -809,6 +832,7 @@
       '<div class="sect" style="display:flex;flex-direction:column;gap:8px">' +
       (s.phase !== 'lobby' ? '<button class="btn sm" id="histBtn">Game history</button>' : '') +
       (s.isHost ? '<button class="btn sm" id="showJoinBtn">Invite players (code &amp; QR)</button>' : '') +
+      '<button class="btn sm" id="shareBtn2">' + I.share + 'Invite by text</button>' +
       '<button class="btn sm" id="rulesBtn">How to play</button></div>';
     if (s.isHost && s.players.length > 1) {
       o += '<div class="sect"><p class="lbl">Leader tools</p><div class="list">' + s.players.filter(function (p) { return p.id !== s.me; }).map(function (p) {
@@ -993,6 +1017,8 @@
     on('menuBtn', function () { menuOpen = true; disarm(); render(); });
     on('closeMenuBtn', function () { menuOpen = false; disarm(); render(); });
     var scrim = $('scrim'); if (scrim) scrim.addEventListener('click', function (e) { if (e.target === scrim) { menuOpen = false; disarm(); render(); } });
+    on('shareBtn', function (b) { shareInvite(b); });
+    on('shareBtn2', function (b) { shareInvite(b); });
     on('showJoinBtn', function () { menuOpen = false; view = 'join'; render(); });
     onArm('menuBeginBtn', 'mbegin', function (b) { menuOpen = false; act(b, 'Starting...', 'begin'); });
     onArm('menuRevealBtn', 'mreveal', function (b) { menuOpen = false; act(b, 'Moving on...', 'reveal'); });
