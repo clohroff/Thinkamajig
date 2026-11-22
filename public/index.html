@@ -313,14 +313,17 @@
 
   // ---------- alerts: banner + vibration + beep ----------
   function initAudio() {
+    // On iPhone, ask for 'playback' audio so the Pocket Thinker still beeps with the ringer switch on silent.
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
     if (actx) return;
     try { var AC = window.AudioContext || window.webkitAudioContext; if (AC) actx = new AC(); } catch (e) {}
   }
-  function tone(freq, at, dur) {
-    var o = actx.createOscillator(), g = actx.createGain();
-    o.type = 'sine'; o.frequency.value = freq; g.gain.value = 0.18;
+  function tone(freq, at, dur, type, vol) {
+    var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + at;
+    o.type = type || 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol || 0.18, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g); g.connect(actx.destination);
-    o.start(actx.currentTime + at); o.stop(actx.currentTime + at + dur);
+    o.start(t); o.stop(t + dur + 0.02);
   }
   function beep() {
     try {
@@ -588,8 +591,10 @@
       '<div class="screen">' + screen + '</div><div class="keys" aria-hidden="true"><i></i><i></i><i></i></div><span class="speaker" aria-hidden="true"></span>' + btn + '</div>' + cap;
   }
   // The Pocket Thinker's beep.
-  function chirp() { try { initAudio(); if (!actx) return; if (actx.state === 'suspended' && actx.resume) actx.resume(); tone(988, 0, 0.08); tone(1319, 0.09, 0.12); } catch (e) {} }
-  function jingle() { try { initAudio(); if (!actx) return; [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.1, 0.12); }); } catch (e) {} }
+  function sfx(fn) { try { initAudio(); if (!actx) return; if (actx.state === 'suspended' && actx.resume) actx.resume(); fn(); } catch (e) {} }
+  function chirp() { sfx(function () { tone(988, 0, 0.09, 'square', 0.09); tone(1319, 0.1, 0.13, 'square', 0.09); }); }   // press to draw
+  function blip() { sfx(function () { tone(1568, 0, 0.06, 'square', 0.06); }); }                                            // hold to peek
+  function jingle() { sfx(function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.1, 0.12, 'square', 0.07); }); }); }
   // A small screen you hold to read: your word while editing, and next round's word.
   function miniWord(word) {
     return '<button class="minilcd peekBtn" aria-label="Hold to see the word">' + maskLcd(word, 15) + '</button>';
@@ -1061,10 +1066,10 @@
     on('tributeBtn', function () { drafts.tribute = !drafts.tribute; render(); });
     var hb = document.querySelectorAll('.peekBtn');
     for (var hi = 0; hi < hb.length; hi++) (function (b) {
-      ['mousedown', 'touchstart'].forEach(function (ev) { b.addEventListener(ev, function (e) { if (e.cancelable) e.preventDefault(); peek(true); }); });
+      ['mousedown', 'touchstart'].forEach(function (ev) { b.addEventListener(ev, function (e) { if (e.cancelable) e.preventDefault(); if (!peeking) blip(); peek(true); }); });
       ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) { b.addEventListener(ev, function () { peek(false); }); });
       b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-      b.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!peeking) peek(true); } });
+      b.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!peeking) { blip(); peek(true); } } });
       b.addEventListener('keyup', function (e) { if (e.key === ' ' || e.key === 'Enter') peek(false); });
       b.addEventListener('blur', function () { if (peeking) peek(false); });
     })(hb[hi]);
