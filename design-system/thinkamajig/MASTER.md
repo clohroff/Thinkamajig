@@ -104,5 +104,5 @@ Short, warm, a little cheeky. "Lock it in", "Nobody got it", not system-speak.
 
 ## James tribute (host option)
 A host switch in the waiting room, off by default. When on, every phone shows a welcome card when
-the game starts: "Welcome to the wonderful world of Thinkamajig" with "For James, who started every
-game this way." Shown once per game per phone. Stored server-side as `tribute`, like `hard`.
+the game starts: "Welcome to the wonderful world of Thinkamajig" with "For James".
+ Shown once per game per phone. Stored server-side as `tribute`, like `hard`.
