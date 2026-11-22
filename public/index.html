@@ -460,29 +460,38 @@
   }
   function groupEnd(r, k) { var n = 0; for (var i = 0; i < k && i < r.clues.length; i++) n += r.clues[i].entries.length + 2; return n; }
   function revealLimit(r) { return groupEnd(r.result, r.rvc == null ? r.result.clues.length : r.rvc); }
-  function stopReveal() { if (revealTimer) { clearInterval(revealTimer); revealTimer = null; } }
+  function stopReveal() { if (revealTimer) { clearTimeout(revealTimer); revealTimer = null; } }
   function initReveal(prev, r) {
     var key = r.code + '-' + r.round;
     if (key === revealKey) return;
     revealKey = key; revealN = revealUnits(r.result).length; rvPlayed = -1; resultsOpen = false;
     stopReveal();
-    if (prev && prev.phase !== 'reveal') revealIdx = 0;   // watched it begin: each writer releases their own group
+    if (prev && prev.phase !== 'reveal') revealIdx = 0;   // watched it begin: the host releases one clue at a time
     else revealIdx = revealLimit(r);                       // arrived after the fact: show everything released so far
   }
-  // Play the newly released group one reveal at a time (2.5 seconds apart).
+  // How long to wait after showing reveal step i before showing the next one.
+  // After a clue appears: time to read it (about 0.4s a word, 3 to 10 seconds). After an answer: 4 seconds.
+  function revealPause(r, i) {
+    var u = revealUnits(r)[i];
+    if (u && u.t === 'h') {
+      var words = String(r.clues[u.ci].clue || '').trim().split(/\s+/).length;
+      return Math.min(10000, Math.max(3000, 1500 + words * 400));
+    }
+    return 4000;
+  }
+  // Play the newly released clue one step at a time: the clue, each answer, then the word.
   function syncReveal() {
     if (!S || S.phase !== 'reveal' || !S.result) return;
-    var lim = revealLimit(S);
-    if (revealIdx < lim && !revealTimer) {
-      revealIdx++;
-      revealTimer = setInterval(function () {
-        if (!S || S.phase !== 'reveal') { stopReveal(); return; }
-        var l = revealLimit(S);
-        if (revealIdx < l) revealIdx++;
-        if (revealIdx >= l) stopReveal();
-        render();
-      }, 2500);
-    }
+    if (revealIdx >= revealLimit(S) || revealTimer) return;
+    revealIdx++;
+    var step = function () {
+      revealTimer = null;
+      if (!S || S.phase !== 'reveal' || !S.result) return;
+      var l = revealLimit(S);
+      if (revealIdx < l) { revealIdx++; render(); }
+      if (revealIdx < l) revealTimer = setTimeout(step, revealPause(S.result, revealIdx - 1));
+    };
+    revealTimer = setTimeout(step, revealPause(S.result, revealIdx - 1));
   }
 
   function setState(r) {
