@@ -1,0 +1,39 @@
+/* Thinkamajig design tokens. Source of truth: MASTER.md */
+:root {
+  /* surfaces: index cards on a grape table */
+  --color-background: #3D2470;   /* grape table */
+  --color-background-deep: #2E1A57;
+  --color-on-background: #FFFFFF; --color-on-background-muted: #D9CCF2;
+  --color-card: #FFFFFF;         /* index card */
+  --color-card-alt: #F6F1FC;     /* lavender: fields and controls inside cards */
+  --color-sticky: #FFE066;       /* sticky note: the secret word */
+  --color-border: #E4DAF3;
+  --color-border-strong: #CDBFE6;
+  /* ink */
+  --color-foreground: #2A1A3A;   /* text on cards, 16:1 */
+  --color-muted-foreground: #6B5A74; /* 6.3:1 on card */
+  /* brand */
+  --color-primary: #FFC83D;      /* sun: main action, ink text 10.4:1 */
+  --color-primary-shadow: #C98F0B;
+  --color-on-primary: #2A1A3A;
+  --color-secondary: #4B2E83;    /* grape: headings, focus, selected */
+  --color-on-secondary: #FFFFFF;
+  --color-chip: #D42E49;         /* poker chip / points */
+  --color-chip-shadow: #9E1F35;
+  --color-on-chip: #FFFFFF;
+  /* meaning */
+  --color-success: #0B7A6E;  --color-success-bg: #E3F6F2;
+  --color-danger: #C42B2B;   --color-danger-bg: #FDE8E6;
+  --color-wager: #8A5A00;    --color-wager-bg: #FFF1C7;
+  --color-ring: #4B2E83;
+  /* type */
+  --font-heading: "Fredoka", "Nunito", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* shape */
+  --radius-sm: 10px; --radius-md: 14px; --radius-lg: 20px; --radius-pill: 999px;
+  --shadow-card: 0 1px 0 #E4DAF3, 0 6px 16px -8px rgba(42, 26, 58, .25);
+  --shadow-press: 0 4px 0;  /* chunky "pressable" lip, colored per button */
+  /* motion */
+  --ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 400ms;
+}

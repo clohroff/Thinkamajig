@@ -3,171 +3,226 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0E1116">
+<meta name="theme-color" content="#3D2470">
 <title>Thinkamajig</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@700&display=swap">
+<link rel="preload" href="fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/nunito-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  :root{--bg:#0E1116;--s1:#171B22;--s2:#1F242D;--line:#2A313C;--line2:#232934;--ink:#F3F1EC;--mute:#9AA3AE;--mute2:#7D8794;--soft:#C9D0D8;
-    --acc:#CC3F1C;--acc-sh:#7E2410;--key:#E5532E;--key-sh:#8A2412;--body:#3F9FDC;--body-sh:#2A6EA3;--lcd:#AEBFA9;--lcd-ink:#1B2812;
-    --ok:#4FD195;--ok-bg:#173A2A;--no:#F28B82;--no-bg:#3D1A18;--wg:#F2A07E;--wg-bg:#3A2416;--gold:#F2C14E}
+  @font-face{font-family:Fredoka;font-weight:500;font-display:swap;src:url(fonts/fredoka-latin-500-normal.woff2) format("woff2")}
+  @font-face{font-family:Fredoka;font-weight:600;font-display:swap;src:url(fonts/fredoka-latin-600-normal.woff2) format("woff2")}
+  @font-face{font-family:Fredoka;font-weight:700;font-display:swap;src:url(fonts/fredoka-latin-700-normal.woff2) format("woff2")}
+  @font-face{font-family:Nunito;font-weight:500;font-display:swap;src:url(fonts/nunito-latin-500-normal.woff2) format("woff2")}
+  @font-face{font-family:Nunito;font-weight:600 700;font-display:swap;src:url(fonts/nunito-latin-700-normal.woff2) format("woff2")}
+  @font-face{font-family:Nunito;font-weight:800 900;font-display:swap;src:url(fonts/nunito-latin-800-normal.woff2) format("woff2")}
+
+  /* Design system: design-system/thinkamajig/MASTER.md. Index cards on a grape table. */
+  :root{
+    --table:#3D2470;--table-deep:#2E1A57;--table-line:rgba(255,255,255,.16);
+    --card:#FFFFFF;--card-alt:#F6F1FC;--card-line:#E4DAF3;--card-line2:#CDBFE6;
+    --ink-dark:#2A1A3A;--mute-dark:#6B5A74;
+    --sticky:#FFE066;--sticky-sh:#E0B92E;
+    --sun:#FFC83D;--sun-sh:#C98F0B;
+    --grape:#4B2E83;
+    --cherry:#D42E49;--cherry-sh:#9E1F35;
+    --ok:#0B7A6E;--ok-bg:#E3F6F2;--no:#C42B2B;--no-bg:#FDE8E6;--wg:#8A5A00;--wg-bg:#FFF1C7;
+    --fh:Fredoka,Nunito,system-ui,sans-serif;
+    --ease-pop:cubic-bezier(.34,1.56,.64,1);
+    /* context colors: on the table (default) */
+    --ink:#FFFFFF;--mute:#D9CCF2;--soft:#EDE6FA;--gold:#FFE066;--line:var(--table-line);
+  }
+  /* context colors: on a white card */
+  .card,.list,.sheet,.toggle,.upnext,details.earlier,.rules,.err,.field,.seg,.rejoin,.dupcard{--ink:var(--ink-dark);--mute:var(--mute-dark);--soft:#4A3A55;--gold:var(--wg);--line:var(--card-line)}
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
+  html,body{margin:0;height:100%;background:var(--table);color:var(--ink);font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.45;font-weight:500}
   p,h1,h2,h3{margin:0}
-  .h{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em}
+  b,strong{font-weight:800}
+  .h{font-family:var(--fh);letter-spacing:-.01em;font-weight:600}
   #app{height:100%}
   .screen{max-width:480px;margin:0 auto;height:100%;height:100dvh;display:flex;flex-direction:column}
-  .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 20px;display:flex;flex-direction:column;gap:14px}
-  .bar{flex:none;padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--s2);background:var(--bg);display:flex;flex-direction:column;gap:8px}
+  .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px}
+  .bar{flex:none;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--table-deep);border-radius:24px 24px 0 0;display:flex;flex-direction:column;gap:8px}
+  :focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+  .card :focus-visible,.list :focus-visible,.sheet :focus-visible{outline-color:var(--grape)}
 
   /* top bar */
   .top{flex:none;display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;gap:10px}
   .top .l{display:flex;align-items:center;gap:10px;min-width:0}
-  .code{font-family:"Space Mono",monospace;font-weight:700;letter-spacing:3px;font-size:13px;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
-  .lbl{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
-  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;white-space:nowrap}
-  .dot{width:10px;height:10px;border-radius:50%;background:var(--key);display:inline-block;flex:none}
-  .steps{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:0 16px 4px}
-  .st{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mute2);padding-top:7px;border-top:3px solid var(--line)}
-  .st.on{color:var(--ink);border-top-color:var(--key)}
-  .st.done{color:var(--mute);border-top-color:#5B6573}
+  .code{font-family:var(--fh);font-weight:700;letter-spacing:.14em;font-size:15px;background:var(--card);color:var(--ink-dark);border-radius:10px;padding:5px 9px 5px 11px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+  .lbl{font-size:14px;font-weight:800;color:var(--mute)}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--card);color:var(--ink-dark);border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--fh);font-size:17px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .dot{width:20px;height:20px;border-radius:50%;background:var(--cherry);display:inline-block;flex:none;box-shadow:inset 0 0 0 3px var(--cherry),inset 0 0 0 5px #fff,0 2px 0 var(--cherry-sh)}
+  .steps{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:2px 16px 6px}
+  .st{font-size:13px;font-weight:800;color:var(--mute);opacity:.6;padding-top:7px;border-top:4px solid var(--table-line);border-radius:2px}
+  .st.on{color:#fff;opacity:1;border-top-color:var(--sun)}
+  .st.done{opacity:.85;border-top-color:var(--mute)}
 
-  /* buttons */
+  /* buttons: chunky, with a lip that collapses when pressed */
   button{font-family:inherit;cursor:pointer;-webkit-user-select:none;user-select:none}
-  .btn{height:56px;width:100%;border-radius:16px;border:0;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;
-    transition:transform .08s,filter .15s,opacity .15s,background .15s;color:var(--ink);background:var(--s2);border:1px solid var(--line)}
-  .btn:active:not(:disabled){transform:translateY(2px);filter:brightness(1.15)}
-  .btn.pri{background:var(--acc);color:#fff;border:0;box-shadow:0 4px 0 var(--acc-sh)}
-  .btn.pri:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--acc-sh)}
-  .btn.good{background:#3DBE84;color:#06261A;border:0}
-  .btn.ghost{background:transparent;border:0;color:var(--soft);height:44px;font-size:15px;font-weight:600}
-  .btn.sm{height:44px;font-size:15px;border-radius:12px}
-  .btn.warn{background:var(--no-bg);border:1px solid #6A2A26;color:var(--no)}
-  .btn:disabled{opacity:.5;cursor:default}
-  .btn.busy,.btn.busy:disabled{opacity:.85;filter:saturate(.7)}
+  .btn{height:56px;width:100%;border-radius:16px;border:0;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;
+    color:var(--ink-dark);background:var(--card);box-shadow:0 4px 0 rgba(0,0,0,.28);transition:transform .08s,box-shadow .08s,opacity .15s,background .15s}
+  .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 rgba(0,0,0,.28)}
+  .card .btn,.list .btn,.sheet .btn{background:var(--card-alt);box-shadow:0 3px 0 var(--card-line2)}
+  .btn.pri{background:var(--sun);color:var(--ink-dark);box-shadow:0 4px 0 var(--sun-sh)}
+  .btn.pri:active:not(:disabled){box-shadow:0 0 0 var(--sun-sh)}
+  .btn.good{background:var(--ok);color:#fff;box-shadow:0 4px 0 #075A51}
+  .btn.ghost{background:transparent;box-shadow:none;color:var(--ink);height:44px;font-size:16px;font-weight:700;text-decoration:underline;text-decoration-color:var(--mute);text-underline-offset:4px}
+  .btn.sm{height:46px;font-size:15px;border-radius:12px}
+  .btn.warn,.card .btn.warn,.sheet .btn.warn{background:var(--no-bg);color:var(--no);box-shadow:0 3px 0 #EDB4AE;text-decoration:none}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn.pri:disabled{background:#8D7AB3;color:#fff;box-shadow:0 4px 0 #6E5C93;opacity:1}
+  .btn.busy,.btn.busy:disabled{opacity:.85}
   .busy::before{content:"";width:16px;height:16px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex:none}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .iconbtn{width:44px;height:44px;border-radius:12px;background:transparent;border:1px solid var(--line);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}
-  .iconbtn:active{background:var(--s2)}
+  .iconbtn{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);border:0;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}
+  .iconbtn:active{background:rgba(255,255,255,.22)}
+  .sheet .iconbtn{background:var(--card-alt)}
   .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 
-  /* surfaces */
-  .card{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:16px}
-  .list{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:2px 16px}
-  .li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line2);min-height:56px}
+  /* surfaces: index cards */
+  .card{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .list{background:var(--card);color:var(--ink);border-radius:20px;padding:2px 16px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--card-line);min-height:56px}
   .li:first-child{border-top:0}
-  .li .nm{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .li .sub{font-size:13px;color:var(--mute)}
-  .hint{font-size:13px;color:var(--mute);text-align:center}
-  .err{background:var(--no-bg);border:1px solid #6A2A26;color:#FFD3CF;border-radius:14px;padding:12px 14px;font-size:14px}
-  .av{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#0E1116;flex:none}
+  .li .nm{flex:1;min-width:0;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .li .sub{font-size:14px;color:var(--mute);font-weight:600}
+  .hint{font-size:15px;color:var(--mute);text-align:center;font-weight:600}
+  .err{background:var(--no-bg);color:var(--no);border-radius:14px;padding:12px 14px;font-size:15px;font-weight:700}
+  .rejoin{background:var(--card);color:var(--ink);border-radius:16px;padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .av{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:15px;font-weight:700;color:var(--ink-dark);flex:none}
   .avs{display:inline-flex;padding-left:6px}
-  .avs .av{width:26px;height:26px;font-size:11px;margin-left:-6px;border:2px solid var(--bg)}
-  .avs .av.off{opacity:.3}
-  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:1px}
+  .avs .av{width:28px;height:28px;font-size:12px;margin-left:-7px;border:2px solid var(--table-deep)}
+  .avs .av.off{opacity:.35}
+  .tag{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:1px}
   .tag.wg{background:var(--wg-bg);color:var(--wg)}
-  .tag.ed{background:var(--s2);color:var(--soft)}
-  .tag.ld{background:#2B2A1A;color:var(--gold)}
+  .tag.ed{background:var(--card-alt);color:var(--mute-dark)}
+  .tag.ld{background:var(--wg-bg);color:var(--wg)}
   .ok{color:var(--ok)}.no{color:var(--no)}
-  label.lbl{display:block;margin-bottom:7px}
-  .field{width:100%;height:52px;border-radius:14px;background:var(--bg);border:1px solid #3A4250;color:var(--ink);font-size:17px;padding:0 14px;font-family:inherit;outline:none}
-  .field:focus{border-color:var(--body)}
-  textarea.field{height:96px;padding:12px 14px;resize:none;line-height:1.4}
-  .codefield{font-family:"Space Mono",monospace;letter-spacing:5px;text-transform:uppercase;text-align:center;font-size:19px}
-  .sw{width:52px;height:32px;border-radius:999px;background:var(--line);position:relative;border:0;padding:0;flex:none;transition:background .15s}
-  .sw i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s}
-  .sw.on{background:var(--acc)}
+  label.lbl{display:block;margin-bottom:6px}
+  .field{width:100%;height:54px;border-radius:14px;background:var(--card);border:2px solid transparent;color:var(--ink-dark);font-size:18px;font-weight:700;padding:0 14px;font-family:inherit;outline:none;box-shadow:0 4px 0 rgba(0,0,0,.22)}
+  .card .field{background:var(--card-alt);border-color:var(--card-line);box-shadow:none}
+  .field::placeholder{color:#8F80A0;font-weight:600}
+  .field:focus{border-color:var(--sun)}
+  .card .field:focus{border-color:var(--grape);background:#fff}
+  textarea.field{height:104px;padding:12px 14px;resize:none;line-height:1.4}
+  .codefield{font-family:var(--fh);font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-align:center;font-size:21px}
+  .sw{width:52px;height:32px;border-radius:999px;background:var(--card-line2);position:relative;border:0;padding:0;flex:none;transition:background .15s}
+  .sw i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s var(--ease-pop);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .sw.on{background:var(--grape)}
   .sw.on i{left:24px}
-  .sw:disabled{opacity:.4}
-  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--s2);border:0;border-radius:14px;padding:12px 14px;width:100%;text-align:left;color:var(--ink)}
+  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card-alt);border:0;border-radius:14px;padding:12px 14px;width:100%;text-align:left;color:var(--ink)}
+  .main>.toggle{background:var(--card);box-shadow:0 6px 0 rgba(0,0,0,.18);border-radius:20px;padding:14px 16px}
   .toggle:disabled{opacity:.55}
-  .toggle b{display:block;font-size:15px}
-  .toggle small{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+  .toggle b{display:block;font-size:16px}
+  .toggle small{display:block;font-size:14px;color:var(--mute);margin-top:2px;font-weight:600}
 
-  /* the device */
-  .device{width:100%;max-width:300px;margin:0 auto;background:var(--body);border-radius:44px 60px 52px 64px;padding:20px 22px 24px;box-shadow:inset 0 -6px 0 var(--body-sh),0 14px 34px rgba(0,0,0,.4)}
-  .device.sm{max-width:260px;padding:16px 18px 20px}
-  .bezel{background:#16191B;border-radius:999px;padding:11px 18px}
-  .lcd{background:var(--lcd);color:var(--lcd-ink);font-family:"Space Mono",monospace;font-weight:700;letter-spacing:4px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;border-radius:999px;
-    height:72px;font-size:30px;padding:0 10px;text-align:center;line-height:1.05;overflow:hidden;white-space:nowrap}
-  .device.sm .lcd{height:56px;font-size:24px}
-  .lcd.msg{font-size:15px;letter-spacing:2px;white-space:normal}
-  .grille{display:flex;justify-content:center;gap:6px;margin:14px 0}
-  .grille i{display:block;width:26px;height:3px;border-radius:2px;background:var(--body-sh)}
-  .keywrap{display:flex;justify-content:center}
-  .key{width:120px;height:70px;border-radius:50%;background:var(--key);border:0;box-shadow:0 6px 0 var(--key-sh);color:#2A0A02;font-size:12px;font-weight:700;letter-spacing:.16em;
-    transition:transform .06s,box-shadow .06s;touch-action:none}
-  .key:active:not(:disabled),.key.down{transform:translateY(6px);box-shadow:0 0 0 var(--key-sh)}
-  .key:disabled{filter:saturate(.5) brightness(.85)}
-  .key.busy{transform:translateY(6px);box-shadow:0 0 0 var(--key-sh)}
-  .key.busy::before{display:none}
-  .device.sm .key{width:100px;height:58px}
-  .device.dim{filter:saturate(.55) brightness(.85)}
-  .minilcd{background:#16191B;border-radius:999px;padding:6px 10px;flex:none;border:0;touch-action:none}
-  .minilcd .lcd{height:34px;width:128px;font-size:15px;letter-spacing:2px}
+  /* the sticky note: the secret word, the one bold thing */
+  .note{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;max-width:290px;min-height:200px;margin:14px auto 6px;padding:30px 18px 20px;
+    background:var(--sticky);color:var(--ink-dark);border:0;border-radius:6px 6px 6px 30px;transform:rotate(-2deg);
+    box-shadow:0 2px 0 var(--sticky-sh),0 18px 28px -14px rgba(0,0,0,.55);transition:transform .2s var(--ease-pop),box-shadow .2s;font-family:inherit;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .note::before{content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;margin-left:-48px;background:rgba(255,255,255,.55);border-radius:3px;transform:rotate(3deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .note.sm{max-width:250px;min-height:150px;padding:24px 16px 16px}
+  .note .lcd{font-family:var(--fh);font-weight:700;font-size:34px;line-height:1.05;text-align:center;letter-spacing:.02em;word-break:break-word;min-height:1.1em;display:flex;align-items:center;justify-content:center}
+  .note .lcd.msg{font-size:24px}
+  .note .cap{font-size:15px;font-weight:800;color:#6B5420}
+  .note.peekBtn.down{transform:rotate(0deg) translateY(-6px) scale(1.04);box-shadow:0 2px 0 var(--sticky-sh),0 26px 36px -14px rgba(0,0,0,.6)}
+  .note.back{background:var(--card);color:var(--ink-dark);border-radius:20px;transform:rotate(1.5deg);box-shadow:0 8px 0 rgba(0,0,0,.2),0 18px 28px -14px rgba(0,0,0,.5);
+    background-image:radial-gradient(circle at 12px 12px,var(--card-alt) 2.5px,transparent 3px);background-size:22px 22px}
+  .note.back::before{display:none}
+  .note.back .q{width:72px;height:72px;border-radius:50%;background:var(--grape);color:#fff;font-family:var(--fh);font-weight:700;font-size:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #2E1A57}
+  .note.back:active:not(:disabled),.note.back.busy{transform:rotate(0) translateY(3px)}
+  .note.back.busy::before{display:block;content:"";position:absolute;top:auto;bottom:18px;left:50%;width:18px;height:18px;margin-left:-9px;background:none;border:3px solid var(--grape);border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;box-shadow:none}
+  .note.sent{transform:rotate(2deg);opacity:.95}
+  .note .stamp{font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ok);border:3px solid var(--ok);border-radius:10px;padding:4px 12px;transform:rotate(-6deg);display:inline-flex;align-items:center;gap:6px}
+  .note.title{min-height:0;padding:32px 22px 24px;margin:24px auto 18px;text-align:center}
+  .note p,.bigq,.h{text-wrap:balance}
+  .note.title h1{font-family:var(--fh);font-weight:700;font-size:44px;line-height:1;letter-spacing:-.01em}
+  .note.title p{font-size:17px;font-weight:800;color:#6B5420}
+  .minilcd{background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 14px;padding:6px 10px;flex:none;border:0;touch-action:none;transform:rotate(-2deg);box-shadow:0 2px 0 var(--sticky-sh);transition:transform .15s var(--ease-pop)}
+  .minilcd.down{transform:rotate(0) scale(1.06)}
+  .minilcd .lcd{height:34px;width:124px;font-family:var(--fh);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
+  .minilcd.empty{background:var(--card-alt);box-shadow:none;transform:none}
+  .minilcd.empty .lcd{color:var(--mute-dark);font-family:Nunito,sans-serif;font-size:13px;font-weight:800}
   .preload .minilcd .lcd{width:96px}
   .peekBtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
 
   /* phase pieces */
-  .bigq{font-size:25px;line-height:1.25;font-weight:600;word-wrap:break-word}
+  .bigq{font-family:var(--fh);font-size:26px;line-height:1.22;font-weight:600;word-wrap:break-word;color:var(--ink-dark)}
   .pg{display:flex;gap:6px;align-items:center}
-  .pg i{display:block;width:22px;height:6px;border-radius:3px;background:var(--line)}
-  .pg i.a{background:var(--ok)}.pg i.c{background:var(--ink)}
-  .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
-  .seg button{height:42px;border:0;border-radius:9px;background:transparent;color:var(--mute);font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px}
-  .seg button.y{background:var(--ok-bg);color:var(--ok)}
-  .seg button.n{background:var(--no-bg);color:var(--no)}
+  .pg i{display:block;width:22px;height:8px;border-radius:4px;background:var(--table-line)}
+  .pg i.a{background:var(--sticky)}.pg i.c{background:#fff}
+  .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--card-alt);border-radius:12px;padding:4px;gap:4px}
+  .seg button{height:44px;border:0;border-radius:9px;background:transparent;color:var(--mute-dark);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .seg button.y{background:var(--ok);color:#fff}
+  .seg button.n{background:var(--no);color:#fff}
   .seg button.busy{opacity:.7}
   .center{text-align:center}
-  .bigcheck{width:64px;height:64px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto}
-  .meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
-  .meter i{display:block;height:100%;background:var(--key);border-radius:5px}
-  .upnext{display:flex;align-items:center;gap:10px;background:var(--s2);border-radius:14px;padding:10px 12px;font-size:14px}
-  .like{height:36px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--soft);display:inline-flex;align-items:center;gap:5px;padding:0 10px;font-size:13px;font-weight:600;flex:none}
-  .like.on{border-color:var(--key);color:#FFB49C;background:#2E1C15}
-  .likes{font-size:13px;color:var(--soft);display:inline-flex;align-items:center;gap:4px;flex:none}
-  .delta{font-weight:700;font-size:15px;min-width:34px;text-align:right;flex:none}
-  details.earlier{background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:0 14px}
-  details.earlier summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:52px;cursor:pointer}
+  .bigcheck{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 5px 0 #075A51;animation:pop .4s var(--ease-pop)}
+  .meter{height:12px;border-radius:6px;background:var(--card-alt);overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--cherry);border-radius:6px}
+  .upnext{display:flex;align-items:center;gap:10px;background:var(--card);color:var(--ink);border-radius:14px;padding:10px 12px;font-size:15px}
+  .like{height:40px;min-width:44px;justify-content:center;border-radius:10px;border:0;background:var(--card-alt);color:var(--mute-dark);display:inline-flex;align-items:center;gap:5px;padding:0 10px;font-size:14px;font-weight:800;flex:none}
+  .like.on{background:var(--grape);color:#fff}
+  .likes{font-size:14px;color:var(--mute);font-weight:800;display:inline-flex;align-items:center;gap:4px;flex:none}
+  .likes.total{font-size:17px;color:var(--grape)}
+  .delta{font-family:var(--fh);font-weight:700;font-size:18px;min-width:34px;text-align:right;flex:none;font-variant-numeric:tabular-nums}
+  details.earlier{background:var(--card);color:var(--ink);border-radius:16px;padding:0 14px;box-shadow:0 4px 0 rgba(0,0,0,.16)}
+  details.earlier summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:56px;cursor:pointer}
   details.earlier summary::-webkit-details-marker{display:none}
-  details.earlier[open] summary{border-bottom:1px solid var(--line2)}
-  .wordchip{font-family:"Space Mono",monospace;font-weight:700;letter-spacing:2px;background:var(--lcd);color:var(--lcd-ink);border-radius:999px;padding:3px 10px;font-size:13px;text-transform:uppercase}
+  details.earlier summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--mute-dark);border-bottom:2.5px solid var(--mute-dark);transform:rotate(45deg);margin:-4px 4px 0 2px;flex:none;transition:transform .15s}
+  details.earlier[open] summary::after{transform:rotate(225deg);margin-top:4px}
+  details.earlier[open] summary{border-bottom:1px solid var(--card-line)}
+  .wordchip{font-family:var(--fh);font-weight:700;letter-spacing:.03em;background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 10px;padding:3px 10px;font-size:14px;text-transform:uppercase;transform:rotate(-2deg);flex:none}
+  .bezel{background:var(--sticky);border-radius:6px 6px 6px 22px;padding:10px 14px;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--sticky-sh);align-self:center;min-width:60%}
+  .bezel .lcd{font-family:var(--fh);font-weight:700;color:var(--ink-dark);text-align:center;letter-spacing:.03em;white-space:nowrap;overflow:hidden}
   .rv{position:relative}
-  .rv.new{animation:pop .5s ease-out}
-  .rv.new::after{content:"";position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;pointer-events:none;
-    background:radial-gradient(circle,rgba(255,236,200,.95) 0,rgba(229,83,46,.55) 45%,rgba(229,83,46,0) 72%);animation:puff .9s ease-out forwards}
-  @keyframes pop{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
-  @keyframes puff{0%{transform:scale(.4);opacity:1}100%{transform:scale(11);opacity:0}}
-  .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:12px;padding:8px}
+  .rv.new{animation:pop .45s var(--ease-pop)}
+  .bezel.rv.new{animation:slap .5s var(--ease-pop)}
+  @keyframes pop{0%{transform:scale(.7) translateY(-10px);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes slap{0%{transform:rotate(-14deg) scale(1.5);opacity:0}100%{transform:rotate(-1.5deg);opacity:1}}
+  .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:12px;padding:8px;border:2px solid var(--card-line)}
   .qr svg{width:100%;height:100%;display:block}
-  .qr.big{width:240px;height:240px;margin:0 auto;padding:12px}
-  .bigcode{font-family:"Space Mono",monospace;font-size:40px;font-weight:700;letter-spacing:6px}
-  .rules p{font-size:15px;color:var(--soft);margin-bottom:12px}
+  .qr.big{width:240px;height:240px;margin:0 auto;padding:12px;border:0;box-shadow:0 6px 0 rgba(0,0,0,.2)}
+  .bigcode{font-family:var(--fh);font-size:42px;font-weight:700;letter-spacing:.14em;line-height:1.1;color:var(--ink)}
+  .rules{background:var(--card);color:var(--ink);border-radius:20px;padding:18px 18px 6px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .rules p{font-size:16px;color:var(--soft);margin-bottom:14px;line-height:1.5}
   .rules b{color:var(--ink)}
+  .dupcard{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .sheet .card,.sheet .list{box-shadow:none;border:1px solid var(--card-line)}
 
-  /* typing: shrink the device so the keyboard has room */
+  /* typing: fold the big note away so the keyboard has room */
   .typing .hero{display:none}
   .typing .heroMini{display:flex !important}
 
   /* sheet */
-  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
-  .sheet{width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;background:var(--s1);border-radius:22px 22px 0 0;border:1px solid var(--line);border-bottom:0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .2s ease-out}
-  .grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 10px}
+  .scrim{position:fixed;inset:0;background:rgba(30,15,60,.6);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+  .sheet{width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;background:var(--card);color:var(--ink);border-radius:24px 24px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .22s var(--ease-pop)}
+  .grab{width:44px;height:5px;border-radius:3px;background:var(--card-line2);margin:4px auto 10px}
   .sheet .sect{margin-top:16px}
   .sheet .sect>.lbl{margin-bottom:6px}
-  .sheet .list{background:var(--bg)}
-  @keyframes up{from{transform:translateY(40px);opacity:.6}}
+  .sheet .btn.ghost{color:var(--no);text-decoration-color:currentColor}
+  @keyframes up{from{transform:translateY(60px);opacity:.6}}
   @keyframes fade{from{opacity:0}}
 
   /* toasts */
-  .toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000e;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90%;z-index:40;text-align:center}
-  .toast.alert{top:calc(12px + env(safe-area-inset-top));bottom:auto;background:var(--key);color:#1A0602;font-weight:700;font-size:16px;padding:14px 18px;box-shadow:0 8px 24px #0009;animation:drop .3s ease-out}
+  .toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink-dark);color:#fff;padding:11px 16px;border-radius:12px;font-size:15px;font-weight:700;max-width:90%;z-index:40;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .toast.alert{top:calc(12px + env(safe-area-inset-top));bottom:auto;width:max-content;max-width:min(92%,440px);background:var(--sun);color:var(--ink-dark);font-weight:800;font-size:17px;padding:14px 18px;border-radius:16px;box-shadow:0 5px 0 var(--sun-sh),0 12px 30px rgba(0,0,0,.4);animation:drop .35s var(--ease-pop)}
   @keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}
+
+  @media (min-width:900px){
+    .main{padding-top:20px}
+    .top{padding-top:20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+    .note,.minilcd,.wordchip,.bezel{transform:none !important}
+  }
 </style>
 </head>
 <body>
 <div id="app"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="vendor/qrcode.js"></script>
 <script>
 (function () {
   'use strict';
@@ -443,7 +498,7 @@
       l[i].style.fontSize = (on ? fit(w, base) : Math.round(base * 0.6)) + 'px';
       l[i].style.letterSpacing = on ? '' : '1px';
     }
-    var k = document.querySelectorAll('.key.peekBtn');
+    var k = document.querySelectorAll('.peekBtn');
     for (var j = 0; j < k.length; j++) k[j].classList.toggle('down', on);
   }
   function maskLcd(word, fs, extra) {
@@ -451,27 +506,19 @@
   }
   function showLcd(text, fs, cls) { var t = String(text || '').toUpperCase(); return '<div class="lcd' + (cls || '') + '" style="font-size:' + (fs ? fit(t, fs) + 'px' : '') + '">' + esc(t) + '</div>'; }
 
-  // mode: 'get' (press for a word), 'word' (hold to peek), 'sent', 'idle'
+  // The word lives on a sticky note. mode: 'get' (face-down card: tap to draw), 'word' (hold to peek), 'sent', 'idle'
   function device(mode, word, opt) {
     opt = opt || {};
-    var fs = opt.sm ? 24 : 30, lcd, key;
-    if (mode === 'word') {
-      lcd = maskLcd(word, fs);
-      key = '<button class="key peekBtn" aria-label="Hold to see your word">HOLD</button>';
-    } else if (mode === 'get') {
-      lcd = '<div class="lcd msg">PRESS THE<br>RED KEY</div>';
-      key = '<button class="key" id="' + (opt.id || 'redBtn') + '" aria-label="Get your word">PRESS</button>';
-    } else if (mode === 'sent') {
-      lcd = '<div class="lcd msg">CLUE SENT</div>';
-      key = '<button class="key" disabled aria-hidden="true" tabindex="-1"></button>';
-    } else {
-      lcd = '<div class="lcd">' + esc(opt.text || 'HELLO') + '</div>';
-      key = '<button class="key" disabled aria-hidden="true" tabindex="-1"></button>';
-    }
-    return '<div class="device' + (opt.sm ? ' sm' : '') + (mode === 'sent' ? ' dim' : '') + '"><div class="bezel">' + lcd + '</div>' +
-      '<div class="grille"><i></i><i></i><i></i><i></i><i></i></div><div class="keywrap">' + key + '</div></div>';
+    var fs = opt.sm ? 28 : 38, sm = opt.sm ? ' sm' : '';
+    if (mode === 'word')
+      return '<button class="note peekBtn' + sm + '" aria-label="Press and hold to see your word">' + maskLcd(word, fs) + '<span class="cap">Press and hold to peek</span></button>';
+    if (mode === 'get')
+      return '<button class="note back' + sm + '" id="' + (opt.id || 'redBtn') + '" aria-label="Draw your word"><span class="q" aria-hidden="true">?</span><span class="cap" style="color:var(--mute-dark)">Tap to draw your word</span></button>';
+    if (mode === 'sent')
+      return '<div class="note sent' + sm + '"><span class="stamp">' + I.check + 'Clue sent</span></div>';
+    return '<div class="note' + sm + '"><div class="lcd msg">' + esc(opt.text || 'Hello') + '</div></div>';
   }
-  // A small LCD you hold to read: used for your word while judging and for next round's word.
+  // A small sticky note you hold to read: your word while judging, and next round's word.
   function miniWord(word) {
     return '<button class="minilcd peekBtn" aria-label="Hold to see the word">' + maskLcd(word, 15) + '</button>';
   }
@@ -517,14 +564,14 @@
     if (s.phase === 'ended' || s.phase === 'draw') return '';
     var has = !!s.myPre;
     return '<div class="card preload" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' +
-      (has ? miniWord(s.myPre) : '<div class="minilcd"><div class="lcd" style="font-size:12px">NO WORD</div></div>') +
-      '<div style="flex:1;min-width:0"><p style="font-weight:600;font-size:14px">' + (s.phase === 'lobby' ? 'Your first word' : 'Next round&rsquo;s word') + '</p><p style="font-size:12px;color:var(--mute)">' + (has ? 'Hold to peek. Only you see it.' : 'Grab it now to think ahead.') + '</p></div>' +
+      (has ? miniWord(s.myPre) : '<div class="minilcd empty"><div class="lcd">No word yet</div></div>') +
+      '<div style="flex:1;min-width:0"><p style="font-weight:800;font-size:15px">' + (s.phase === 'lobby' ? 'Your first word' : 'Next round&rsquo;s word') + '</p><p style="font-size:14px;color:var(--mute)">' + (has ? 'Hold to peek. Only you see it.' : 'Grab it now to think ahead.') + '</p></div>' +
       '<button class="btn sm" id="preBtn" style="width:auto;padding:0 14px">' + (has ? I.swap + 'Swap' : 'Get') + '</button></div>';
   }
 
   function rulesHtml() {
     return '<div class="rules">' +
-      '<p>Everyone starts with <b>5 chips</b>. Each round, everyone gets a secret word at the same time. Press the red key to get yours, hold it to peek, and write a clue that describes it without saying it.</p>' +
+      '<p>Everyone starts with <b>5 chips</b>. Each round, everyone gets a secret word at the same time. Draw yours, press and hold the sticky note to peek, and write a clue that describes it without saying it.</p>' +
       '<p>When all the clues are in, everyone answers everyone else&rsquo;s clues. You can change your answers until everyone has locked in.</p>' +
       '<p>A correct guess earns <b>1 chip</b>. The clue writer earns 1 chip per correct guess, <b>unless everyone gets it</b> &mdash; then the writer gets nothing.</p>' +
       '<p>You can <b>wager a chip</b> on an answer: right earns 2, wrong loses 1 &mdash; unless nobody got that clue, then you keep it.</p>' +
@@ -534,12 +581,11 @@
 
   // ---------- screens ----------
   function homeScreen() {
-    var main = '<div class="center" style="padding-top:18px"><h1 class="h" style="font-size:40px;font-weight:700">Thinkamajig</h1><p style="color:var(--mute);margin-top:4px">Describe the word. Don&rsquo;t say it.</p></div>' +
-      device('idle', '', { sm: true, text: 'HELLO' }) +
+    var main = '<div class="note title"><h1>Thinkamajig</h1><p>Describe the word. Don&rsquo;t say it.</p></div>' +
       (msg ? '<div class="err">' + esc(msg) + '</div>' : '') +
-      (drafts.dup ? '<div class="card"><p style="margin-bottom:12px">A player named <b>' + esc(drafts.dup.name) + '</b> is already in game ' + esc(drafts.dup.code) + '. Is that you?</p>' +
+      (drafts.dup ? '<div class="dupcard"><p style="margin-bottom:12px">A player named <b>' + esc(drafts.dup.name) + '</b> is already in game ' + esc(drafts.dup.code) + '. Is that you?</p>' +
         '<div style="display:flex;flex-direction:column;gap:8px"><button id="claimBtn" class="btn good">Yes, that&rsquo;s me &mdash; rejoin</button><button id="notMeBtn" class="btn sm">No, I&rsquo;ll use another name</button></div></div>' : '') +
-      (savedCode && !drafts.dup ? '<div style="background:#1E2A22;border:1px solid #2C4A37;border-radius:14px;padding:10px 12px 10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><p style="font-size:14px;font-weight:600">Game ' + esc(savedCode) + ' is still going</p><p style="font-size:13px;color:var(--mute)">Jump back in' + (drafts.name ? ' as ' + esc(drafts.name) : '') + '</p></div><button id="rejoinBtn" class="btn good sm" style="width:auto">Rejoin</button></div>' : '') +
+      (savedCode && !drafts.dup ? '<div class="rejoin"><div style="flex:1;min-width:0"><p style="font-size:15px;font-weight:800">Game ' + esc(savedCode) + ' is still going</p><p style="font-size:14px;color:var(--mute)">Jump back in' + (drafts.name ? ' as ' + esc(drafts.name) : '') + '</p></div><button id="rejoinBtn" class="btn good sm" style="width:auto">Rejoin</button></div>' : '') +
       '<div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px">' +
       '<div><label class="lbl" for="name">Your name</label><input class="field" type="text" id="name" name="given-name" maxlength="16" autocomplete="given-name" autocapitalize="words" placeholder="Name"></div>' +
       '<div><label class="lbl" for="code">Game code</label><input class="field codefield" type="text" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD"></div></div>';
@@ -553,11 +599,11 @@
     var qr = qrSvg(joinLink(s.code));
     var main = '<div class="card" style="display:flex;align-items:center;gap:16px">' +
       (qr ? '<div class="qr" role="img" aria-label="QR code to join game ' + esc(s.code) + '">' + qr + '</div>' : '') +
-      '<div style="flex:1;min-width:0"><p class="lbl">Game code</p><p class="bigcode">' + esc(s.code) + '</p><p style="font-size:13px;color:var(--mute)">Friends scan the code, or open this page and type it in.</p></div></div>' +
+      '<div style="flex:1;min-width:0"><p class="lbl">Game code</p><p class="bigcode">' + esc(s.code) + '</p><p style="font-size:14px;color:var(--mute)">Friends scan the QR code, or open this page and type the code.</p></div></div>' +
       '<button class="btn" id="shareBtn">' + I.share + 'Invite by text</button>' +
-      '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Players</span><span class="sub">' + s.players.length + ' joined &middot; ' + s.minPlayers + ' needed</span></div>' +
+      '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Players</span><span class="sub">' + s.players.length + ' joined, ' + s.minPlayers + ' needed</span></div>' +
       s.players.map(function (p) {
-        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' &middot; you' : 'You') : '') + '</span></div>';
+        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' (you)' : 'You') : '') + '</span></div>';
       }).join('') + '</div>' +
       (s.isHost ? '<button class="toggle" id="hardBtn" aria-pressed="' + !!drafts.hard + '"><span><b>Hard mode</b><small>Clues can&rsquo;t hint at letters, length, syllables or rhymes</small></span><span class="sw' + (drafts.hard ? ' on' : '') + '"><i></i></span></button>' : '') +
       preloadCard(s);
@@ -573,15 +619,14 @@
     var left = s.needCount - s.doneCount;
     if (!s.hasWord) {
       main = '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">' + device('get') +
-        '<p class="hint" style="font-size:15px">Everyone writes at the same time.<br>Press the red key to get your word.</p></div>';
+        '<p class="hint">Everyone writes at the same time.<br>Draw a word and describe it without saying it.</p></div>';
       bar = whoRow(s, plural(s.doneCount, 'clue') + ' in') + '<button class="btn pri" id="getBtn">Get my word</button>';
     } else if (!s.myClue || (editing && s.canEditClue)) {
       var ed = !!s.myClue;
       main = '<div class="hero">' + device('word', s.myWord) + '</div>' +
-        '<div class="heroMini" style="display:none;align-items:center;gap:12px">' + miniWord(s.myWord) + '<p style="font-size:13px;color:var(--mute)">Hold to peek at your word</p></div>' +
-        '<div class="hero" style="display:flex;align-items:center;justify-content:center;gap:12px"><p style="font-size:14px;color:var(--soft)">Hold the red key to see your word</p>' +
-        (ed ? '' : '<button class="btn sm" id="swapBtn" style="width:auto;height:36px;padding:0 10px;font-size:14px">' + I.swap + 'New word</button>') + '</div>' +
-        '<div class="card" style="padding:14px"><label class="lbl" for="clue">' + (ed ? 'Edit your clue' : 'Your clue') + (s.hard ? ' &middot; hard mode' : '') + '</label>' +
+        '<div class="heroMini" style="display:none;align-items:center;gap:12px">' + miniWord(s.myWord) + '<p style="font-size:14px;color:var(--mute)">Hold to peek at your word</p></div>' +
+        (ed ? '' : '<div class="hero" style="display:flex;align-items:center;justify-content:center;gap:10px"><p style="font-size:15px;color:var(--mute);font-weight:600">Don&rsquo;t like it?</p><button class="btn sm" id="swapBtn" style="width:auto;height:44px;padding:0 14px">' + I.swap + 'New word</button></div>') +
+        '<div class="card" style="padding:14px"><label class="lbl" for="clue">' + (ed ? 'Edit your clue' : 'Your clue') + (s.hard ? ' (hard mode)' : '') + '</label>' +
         '<textarea class="field" id="clue" maxlength="280" placeholder="Describe it without saying it"></textarea></div>';
       bar = (ed ? '<div class="row2"><button class="btn" id="cancelClueBtn">Cancel</button><button class="btn pri" id="saveClueBtn">Save clue</button></div>'
                 : whoRow(s, plural(s.doneCount, 'clue') + ' in') + '<button class="btn pri" id="clueBtn">Send clue</button>');
@@ -589,7 +634,7 @@
       main = device('sent', '', { sm: true }) +
         '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="lbl">Your clue</span>' +
         (s.canEditClue ? '<button class="btn ghost" id="editClueBtn" style="width:auto;height:32px;padding:0 4px;font-size:14px">' + I.edit + 'Edit</button>' : '') + '</div>' +
-        '<p style="font-size:18px">' + esc(s.myClue) + '</p></div>' + statusList(s);
+        '<p class="h" style="font-size:21px;line-height:1.3">' + esc(s.myClue) + '</p></div>' + statusList(s);
       bar = '<p class="hint">' + (left > 0 ? 'Waiting on ' + esc(waitingNames(s)) + '&hellip;' : 'Everyone is in.') + '</p>' +
         (s.isHost && s.canBegin ? armBtn('beginBtn', 'begin', 'Start answering now', 'Tap again to start without them', '') : '');
     }
@@ -599,7 +644,7 @@
   // ----- Answer -----
   function myClueMini(s) {
     if (!s.myClue || !s.canEditClue) return '';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:2px 4px"><p style="flex:1;min-width:0;font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Your clue: ' + esc(s.myClue) + '</p>' +
+    return '<div style="display:flex;align-items:center;gap:10px;padding:2px 4px"><p style="flex:1;min-width:0;font-size:14px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Your clue: ' + esc(s.myClue) + '</p>' +
       '<button class="btn ghost" id="editClueBtn" style="width:auto;height:32px;padding:0 4px;font-size:14px">' + I.edit + 'Edit</button></div>';
   }
   function guessPhase(s) {
@@ -610,8 +655,8 @@
       return screen(topBar(s) + steps(s), main, bar);
     }
     if (editing && s.canEditClue) {
-      main = '<div class="card" style="padding:14px"><label class="lbl" for="clue">Edit your clue' + (s.hard ? ' &middot; hard mode' : '') + '</label><textarea class="field" id="clue" maxlength="280"></textarea></div>' +
-        '<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' + miniWord(s.myWord) + '<p style="font-size:13px;color:var(--mute)">Hold to peek at your word</p></div>';
+      main = '<div class="card" style="padding:14px"><label class="lbl" for="clue">Edit your clue' + (s.hard ? ' (hard mode)' : '') + '</label><textarea class="field" id="clue" maxlength="280"></textarea></div>' +
+        '<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' + miniWord(s.myWord) + '<p style="font-size:14px;color:var(--mute)">Hold to peek at your word</p></div>';
       bar = '<div class="row2"><button class="btn" id="cancelClueBtn">Cancel</button><button class="btn pri" id="saveClueBtn">Save clue</button></div>';
       return screen(topBar(s) + steps(s), main, bar);
     }
@@ -643,11 +688,11 @@
       '<p class="h bigq">' + esc(c.clue) + '</p>' +
       '<div><label class="lbl" for="ans_' + esc(c.id) + '">Your answer</label><input class="field ans" type="text" id="ans_' + esc(c.id) + '" data-g="' + esc(c.id) + '" maxlength="40" autocomplete="off" autocapitalize="none" enterkeyhint="' + (next ? 'next' : 'done') + '" placeholder="Type your guess"></div>' +
       '<button class="toggle wgtog" data-g="' + esc(c.id) + '" aria-pressed="' + chk + '"' + (canW ? '' : ' disabled') + '><span><b>Wager a chip</b><small>' +
-      (s.wagerLimit < 1 ? 'You need a chip to wager' : (canW ? '+2 if right &middot; &minus;1 if wrong' : 'No chips left to wager')) + '</small></span><span class="sw' + (chk ? ' on' : '') + '"><i></i></span></button></div>' +
+      (s.wagerLimit < 1 ? 'You need a chip to wager' : (canW ? 'Right: +2. Wrong: &minus;1.' : 'No chips left to wager')) + '</small></span><span class="sw' + (chk ? ' on' : '') + '"><i></i></span></button></div>' +
       '<div class="row2">' + (prev ? '<button class="btn sm" id="prevBtn">' + I.left + esc(prev.name) + '&rsquo;s</button>' : '<span></span>') +
       (next ? '<button class="btn sm" id="nextClueBtn">' + esc(next.name) + '&rsquo;s' + I.right + '</button>' : '<span></span>') + '</div>' + myClueMini(s);
     bar = '<p class="hint">You can change answers until everyone locks in</p>' +
-      '<button class="btn pri" id="guessBtn">' + I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ' &middot; ' + plural(used, 'wager') : '') + '</button>';
+      '<button class="btn pri" id="guessBtn">' + I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ', ' + plural(used, 'wager') : '') + '</button>';
     return screen(topBar(s) + steps(s), main, bar);
   }
 
@@ -665,7 +710,7 @@
             '<div class="seg"><button class="markBtn' + (e.ok ? ' y' : '') + '" data-id="' + esc(e.id) + '" data-ok="1" aria-pressed="' + e.ok + '">' + I.check + 'Right</button>' +
             '<button class="markBtn' + (!e.ok ? ' n' : '') + '" data-id="' + esc(e.id) + '" data-ok="0" aria-pressed="' + !e.ok + '">' + I.x + 'Wrong</button></div></div>';
         }).join('') : '<div class="li"><span class="sub">No one answered your clue.</span></div>') + '</div>';
-      bar = '<p class="hint">' + (all ? 'Everyone got it, so you score nothing' : right + ' right &middot; you&rsquo;ll score <b style="color:var(--ink)">+' + right + '</b>') + '</p><button id="awardBtn" class="btn pri">Award points</button>';
+      bar = '<p class="hint">' + (all ? 'Everyone got it, so you score nothing' : right + ' right, so you&rsquo;ll score <b style="color:var(--ink)">+' + right + '</b>') + '</p><button id="awardBtn" class="btn pri">Award points</button>';
     } else {
       var js = s.judgeStatus || [], mine = js.filter(function (x) { return x.id === s.me; })[0];
       var waiting = js.filter(function (x) { return !x.awarded; });
@@ -714,12 +759,12 @@
         if (ui < shown) inner += entryRow(s, c, e, 'rv' + (fresh && ui === shown - 1 ? ' new' : ''), cdone);
       });
       var wordShown = cdone, wi = base + 1 + c.entries.length;
-      main += '<div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl">Clue ' + (cur + 1) + ' of ' + N + ' &middot; ' + esc(c.giverName) + '</span>' +
-        (wordShown ? '<span style="font-size:13px;color:var(--mute)">Writer scores <b class="' + (c.giverPts ? 'ok' : '') + '">+' + c.giverPts + '</b></span>' : '') + '</div>' +
+      main += '<div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl">' + esc(c.giverName) + '&rsquo;s clue (' + (cur + 1) + ' of ' + N + ')</span>' +
+        (wordShown ? '<span style="font-size:14px;color:var(--mute)">Writer scores <b class="' + (c.giverPts ? 'ok' : '') + '">+' + c.giverPts + '</b></span>' : '') + '</div>' +
         '<div class="card' + (fresh && shown - 1 === base ? ' rv new' : '') + '" style="display:flex;flex-direction:column;gap:12px">' +
-        '<div style="display:flex;align-items:flex-start;gap:10px"><p class="h" style="flex:1;font-size:21px;font-weight:600;line-height:1.3;word-wrap:break-word">' + esc(c.clue) + '</p>' +
+        '<div style="display:flex;align-items:flex-start;gap:10px"><p class="h" style="flex:1;font-size:22px;font-weight:600;line-height:1.28;word-wrap:break-word">' + esc(c.clue) + '</p>' +
         (cdone ? likeBtn(s, 'clue', c.giverId, '', c.giverId === s.me, esc(c.giverName) + '’s clue') : '') + '</div>' +
-        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 24) + '</div>' : '') +
+        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 28) + '</div>' : '') +
         (inner ? '<div>' + inner + '</div>' : '') +
         (wordShown && c.allCorrect ? '<p class="hint">Everyone got it, so the writer scores nothing.</p>' : '') + '</div>';
       // earlier clues, folded away
@@ -739,7 +784,7 @@
       else {
         var nxt = r.clues[s.rvc];
         if (nxt && nxt.giverId === s.me) bar = '<p class="hint">Everyone&rsquo;s waiting on you</p><button id="revNextBtn" class="btn pri">Reveal answers to my clue</button>';
-        else if (nxt) bar = '<div class="upnext">' + av(nxt.giverId, nxt.giverName) + '<p style="flex:1">Up next: <b>' + esc(nxt.giverName) + '&rsquo;s clue</b></p><span class="sub" style="font-size:13px;color:var(--mute)">' + esc(nxt.giverName) + ' taps when ready</span></div>' +
+        else if (nxt) bar = '<div class="upnext">' + av(nxt.giverId, nxt.giverName) + '<p style="flex:1">Up next: <b>' + esc(nxt.giverName) + '&rsquo;s clue</b></p><span class="sub" style="font-size:14px">They tap when ready</span></div>' +
           (s.isHost ? armBtn('revForBtn', 'revfor', 'Reveal it for ' + esc(nxt.giverName), 'Tap again to reveal for them', 'ghost') : '');
       }
     } else bar = '<button class="btn pri" id="resultsBtn">See round results</button>';
@@ -784,7 +829,7 @@
     var sorted = s.players.slice().sort(function (a, b) { return b.score - a.score; });
     var top = sorted.length ? sorted[0].score : 0, winners = sorted.filter(function (p) { return p.score === top && top > 0; });
     var head = winners.length === 1 ? (winners[0].id === s.me ? 'You win!' : esc(winners[0].name) + ' wins!') : (winners.length ? 'It&rsquo;s a tie!' : 'Game over');
-    var main = '<div class="center" style="padding-top:8px">' + device('idle', '', { sm: true, text: 'THE END' }) + '<p class="lbl" style="margin-top:18px">Game over</p><h1 class="h" style="font-size:34px;font-weight:700;margin-top:4px">' + head + '</h1></div>' +
+    var main = '<div class="center" style="padding-top:8px">' + device('idle', '', { sm: true, text: 'The end' }) + '<p class="lbl" style="margin-top:18px">Game over</p><h1 class="h" style="font-size:34px;font-weight:700;margin-top:4px">' + head + '</h1></div>' +
       standings(s) + '<button class="btn" id="histBtn">Game history</button>';
     return screen('', main, '<button id="doneBtn" class="btn pri">Back to start</button>');
   }
@@ -796,7 +841,7 @@
     else if (!h.rounds.length) b += '<p class="hint" style="padding:30px 0">No finished rounds yet.</p>';
     else {
       var tl = 0; h.rounds.forEach(function (rd) { rd.clues.forEach(function (c) { tl += c.likes || 0; c.entries.forEach(function (e) { tl += e.likes || 0; }); }); });
-      b += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px"><span class="lbl">Total likes</span><span class="likes" style="font-size:16px;color:#FFB49C">' + I.up + tl + '</span></div>';
+      b += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px"><span class="lbl">Total likes</span><span class="likes total">' + I.up + tl + '</span></div>';
       h.rounds.slice().reverse().forEach(function (rd) {
         b += '<p class="lbl" style="margin-top:6px">Round ' + rd.round + '</p>';
         rd.clues.forEach(function (c) {
@@ -825,7 +870,7 @@
 
   function menuSheet(s) {
     var o = '<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-label="Game menu"><div class="grab"></div>' +
-      '<div style="display:flex;align-items:center;justify-content:space-between"><div><p class="lbl">Game ' + esc(s.code) + (s.phase === 'lobby' ? '' : ' &middot; Round ' + s.round) + '</p><p class="h" style="font-size:22px;font-weight:700">' + (s.phase === 'lobby' ? 'Players' : 'Scores') + '</p></div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between"><div><p class="lbl">Game ' + esc(s.code) + (s.phase === 'lobby' ? '' : ', round ' + s.round) + '</p><p class="h" style="font-size:22px;font-weight:700">' + (s.phase === 'lobby' ? 'Players' : 'Scores') + '</p></div>' +
       '<button class="iconbtn" id="closeMenuBtn" aria-label="Close menu">' + I.close + '</button></div>' +
       '<div class="sect">' + standings(s, null, true) + '</div>' +
       (s.phase !== 'lobby' ? '<div class="sect">' + poolCard(s) + '</div>' : '') +
@@ -1043,7 +1088,7 @@
     var b = $('guessBtn'); if (!b || !S) return;
     var used = 0, answered = 0;
     S.toGuess.forEach(function (x) { if (drafts.wagers[x.id]) used++; if ((drafts.answers[x.id] || '').trim()) answered++; });
-    b.innerHTML = I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ' &middot; ' + plural(used, 'wager') : '');
+    b.innerHTML = I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ', ' + plural(used, 'wager') : '');
     var dots = document.querySelectorAll('.pg i');
     S.toGuess.forEach(function (x, i) { if (dots[i] && i !== gi) dots[i].className = (drafts.answers[x.id] || '').trim() ? 'a' : ''; });
   }
