@@ -11,9 +11,12 @@ Everyone writes a clue for a secret word, then guesses everyone else's, then the
 Phones are glanced at between conversation: every screen needs one obvious next action.
 
 ## Concept: game night on the table
-A saturated grape "table" with white index cards dealt onto it. Your secret word is a yellow
-**sticky note** you press and hold to peek (like cupping your hand over a card). Points are
-red **poker chips**. The sticky note is the one bold, memorable element; everything else stays quiet.
+A saturated grape "table" with white index cards dealt onto it. Your secret word lives on the
+**Pocket Thinker**: an original retro handheld (tangerine body, amber screen, one big grape button,
+strap loop) that you press to draw and hold to peek. It is the one bold, memorable element and
+appears in every game. Every word display (mini screens, word chips, the reveal) uses its amber
+screen. The yellow **sticky note** is now only the title card (home, welcome, game over).
+Points are red **poker chips**.
 No device, gadget or console metaphors. No imagery or wording from any published game.
 
 Revision note: the first draft used a cream table. Checked against the brief, cream + warm accent
@@ -26,7 +29,9 @@ is a generic default and reads dim for a loud evening game, so the table became 
 | Table deep | `#2E1A57` | bottom action bar |
 | Lilac | `#D9CCF2` | secondary text on the table (8.2:1) |
 | Card | `#FFFFFF` | all content surfaces; ink `#2A1A3A`, muted `#6B5A74` (6.3:1) |
-| Sticky | `#FFE066` | the secret word, word chips (ink 12.3:1) |
+| Sticky | `#FFE066` | title card on home / welcome / game over (ink 12.3:1) |
+| Tangerine | `#FF8A3D` / lip `#D9661C` | Pocket Thinker body |
+| Amber screen | `#FFB347` on `#2B1A0B` | every word display, VT323 font |
 | Sun | `#FFC83D` | the one main action per screen (ink text 10.4:1; 8:1 against the table) |
 | Cherry | `#D42E49` | poker chips / score |
 | Success / Danger / Wager | `#0B7A6E` / `#C42B2B` / `#8A5A00` on tinted bgs | right / wrong / wager |
@@ -34,6 +39,7 @@ Never convey right/wrong with color alone: always icon + word.
 
 ## Typography
 - Headings & numbers: **Fredoka** 600–700, letter-spacing -0.01em.
+- Screen text: **VT323**, only on the Pocket Thinker amber screen.
 - Body: **Nunito** 500–800. Base 16px / 1.45. Minimum 13px for any text, 15px for anything read during play.
 - The clue being answered is the hero: 24–28px Fredoka.
 - Scores and game codes use `font-variant-numeric: tabular-nums`.
@@ -95,3 +101,8 @@ Short, warm, a little cheeky. "Lock it in", "Nobody got it", not system-speak.
 - Alerts are white cards with a mini sticky note (not yellow, so they never look like the main button); tap to dismiss; `role="alert"`.
 - "Host", never "Leader". Sentence case everywhere (deliberately not Title Case).
 - Peek works by keyboard too: hold Space or Enter on the note.
+
+## James tribute (host option)
+A host switch in the waiting room, off by default. When on, every phone shows a welcome card when
+the game starts: "Welcome to the wonderful world of Thinkamajig" with "For James, who started every
+game this way." Shown once per game per phone. Stored server-side as `tribute`, like `hard`.

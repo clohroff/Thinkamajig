@@ -7,10 +7,12 @@
 <title>Thinkamajig</title>
 <link rel="preload" href="fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/nunito-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/vt323-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face{font-family:Fredoka;font-weight:500;font-display:swap;src:url(fonts/fredoka-latin-500-normal.woff2) format("woff2")}
   @font-face{font-family:Fredoka;font-weight:600;font-display:swap;src:url(fonts/fredoka-latin-600-normal.woff2) format("woff2")}
   @font-face{font-family:Fredoka;font-weight:700;font-display:swap;src:url(fonts/fredoka-latin-700-normal.woff2) format("woff2")}
+  @font-face{font-family:VT323;font-weight:400;font-display:swap;src:url(fonts/vt323-latin-400-normal.woff2) format("woff2")}
   @font-face{font-family:Nunito;font-weight:500;font-display:swap;src:url(fonts/nunito-latin-500-normal.woff2) format("woff2")}
   @font-face{font-family:Nunito;font-weight:600 700;font-display:swap;src:url(fonts/nunito-latin-700-normal.woff2) format("woff2")}
   @font-face{font-family:Nunito;font-weight:800 900;font-display:swap;src:url(fonts/nunito-latin-800-normal.woff2) format("woff2")}
@@ -24,6 +26,7 @@
     --sun:#FFC83D;--sun-sh:#C98F0B;
     --grape:#4B2E83;
     --cherry:#D42E49;--cherry-sh:#9E1F35;
+    --tang:#FF8A3D;--tang-sh:#D9661C;--amber:#FFB347;--amber-bg:#2B1A0B;--fpix:VT323,ui-monospace,monospace;
     --ok:#0B7A6E;--ok-bg:#E3F6F2;--no:#C42B2B;--no-bg:#FDE8E6;--wg:#8A5A00;--wg-bg:#FFF1C7;
     --fh:Fredoka,Nunito,system-ui,sans-serif;
     --ease-pop:cubic-bezier(.34,1.56,.64,1);--ease-out:cubic-bezier(.16,1,.3,1);
@@ -124,34 +127,48 @@
   .toggle b{display:block;font-size:16px}
   .toggle small{display:block;font-size:14px;color:var(--mute);margin-top:2px;font-weight:600}
 
-  /* the sticky note: the secret word, the one bold thing */
-  .note{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;max-width:290px;min-height:200px;margin:14px auto 6px;padding:30px 18px 20px;
-    background:var(--sticky);color:var(--ink-dark);border:0;border-radius:6px 6px 6px 30px;transform:rotate(-2deg);
-    box-shadow:0 2px 0 var(--sticky-sh),0 18px 28px -14px rgba(0,0,0,.55);transition:transform .25s var(--ease-out),box-shadow .25s;font-family:inherit;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  /* sticky note: the title card on home and game over */
+  .note{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;max-width:290px;margin:14px auto 6px;padding:30px 18px 20px;
+    background:var(--sticky);color:var(--ink-dark);border:0;border-radius:6px 6px 6px 30px;transform:rotate(-2deg);box-shadow:0 2px 0 var(--sticky-sh),0 18px 28px -14px rgba(0,0,0,.55)}
   .note::before{content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;margin-left:-48px;background:rgba(255,255,255,.55);border-radius:3px;transform:rotate(3deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-  .note.sm{max-width:250px;min-height:150px;padding:24px 16px 16px}
-  .note .lcd{font-family:var(--fh);font-weight:700;font-size:34px;line-height:1.05;text-align:center;letter-spacing:.02em;word-break:break-word;min-height:1.1em;display:flex;align-items:center;justify-content:center}
-  .note .lcd.msg{font-size:24px}
-  .note .cap{font-size:15px;font-weight:800;color:#6B5420}
-  .note .cap .on{display:none}.note.down .cap .on{display:inline}.note.down .cap .off{display:none}
-  .note.peekBtn.down{transform:rotate(0deg) translateY(-6px) scale(1.04);box-shadow:0 2px 0 var(--sticky-sh),0 26px 36px -14px rgba(0,0,0,.6)}
-  .note.back{background:var(--card);color:var(--ink-dark);border-radius:20px;transform:rotate(1.5deg);box-shadow:0 2px 3px rgba(20,8,45,.2),0 18px 28px -14px rgba(0,0,0,.5);
-    background-image:radial-gradient(circle at 12px 12px,var(--card-alt) 2.5px,transparent 3px);background-size:22px 22px}
-  .note.back::before{display:none}
-  .note.back .q{width:72px;height:72px;border-radius:50%;background:var(--grape);color:#fff;font-family:var(--fh);font-weight:700;font-size:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #2E1A57}
-  .note.back:active:not(:disabled),.note.back.busy{transform:rotate(0) translateY(3px)}
-  .note.back.busy::before{display:block;content:"";position:absolute;top:auto;bottom:18px;left:50%;width:18px;height:18px;margin-left:-9px;background:none;border:3px solid var(--grape);border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;box-shadow:none}
-  .note.sent{transform:rotate(2deg);opacity:.95}
-  .note .stamp{font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ok);border:3px solid var(--ok);border-radius:10px;padding:4px 12px;transform:rotate(-6deg);display:inline-flex;align-items:center;gap:6px}
+
+  /* the Pocket Thinker: the word device, the one bold thing */
+  .pt{position:relative;width:200px;height:290px;margin:12px auto 0;flex:none}
+  .pt.sm{width:170px;height:246px}
+  .pt .shell{position:absolute;inset:0;background:var(--tang);border-radius:26px 26px 26px 60px;box-shadow:inset 0 -8px 0 var(--tang-sh),inset 0 4px 0 rgba(255,255,255,.3),0 2px 3px rgba(20,8,45,.25),0 18px 30px -14px rgba(0,0,0,.6)}
+  .pt .strap{position:absolute;right:-13px;top:30px;width:26px;height:52px;border:6px solid var(--table-deep);border-left:0;border-radius:0 20px 20px 0}
+  .pt .pname{position:absolute;left:20px;top:14px;font-family:var(--fh);font-weight:700;font-size:12px;letter-spacing:.06em;color:#7A3A0E}
+  .pt .screen{position:absolute;left:18px;right:18px;top:34px;height:118px;border-radius:12px;background:#1A1009;padding:8px;box-shadow:inset 0 3px 0 rgba(0,0,0,.4)}
+  .pt.sm .screen{top:30px;height:96px}
+  .pt .lcd,.lcdbox{border-radius:6px;background:var(--amber-bg);color:var(--amber);font-family:var(--fpix);line-height:1;text-align:center;text-shadow:0 0 6px rgba(255,179,71,.55);
+    background-image:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.25) 2px 3px);display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
+  .pt .lcd{width:100%;height:100%;font-size:38px;padding:0 4px}
+  .pt .lcd.msg{font-size:24px;white-space:normal;line-height:1.05}
+  .pt .keys{position:absolute;left:22px;top:170px;display:flex;gap:8px}
+  .pt.sm .keys{top:140px}
+  .pt .keys i{width:22px;height:12px;border-radius:6px;background:#FFD9BF;box-shadow:0 2px 0 #E3A77F}
+  .pt .speaker{position:absolute;left:26px;bottom:30px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,#B9541A 2px,transparent 2.6px) 0 0/10px 10px}
+  .pt.sm .speaker{width:40px;height:40px;bottom:24px}
+  .pt .big{position:absolute;right:22px;bottom:26px;width:84px;height:84px;border-radius:50%;border:0;padding:0;background:var(--grape);color:#fff;box-shadow:0 7px 0 #24134A;transition:transform .07s,box-shadow .07s;font-family:var(--fh);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
+  .pt.sm .big{width:70px;height:70px;right:18px;bottom:22px}
+  .pt .big:active:not(:disabled),.pt .big.down,.pt .big.busy{transform:translateY(7px);box-shadow:0 0 0 #24134A}
+  .pt .big:disabled:not(.busy){background:#6E5C93;box-shadow:0 7px 0 #4A3573}
+  .pt .big:focus-visible{outline:3px solid var(--sun);outline-offset:4px}
+  .pt.sent .lcd{opacity:.65}
+  .ptcap{text-align:center;font-size:15px;font-weight:800;color:var(--mute);margin-top:6px}
+  .ptcap .on{display:none}
+  body.peeking .ptcap .on{display:inline}body.peeking .ptcap .off{display:none}
   .note.title{min-height:0;padding:32px 22px 24px;margin:24px auto 18px;text-align:center}
   .bigq,.h{text-wrap:balance}
   .note.title h1{font-family:var(--fh);font-weight:700;font-size:44px;line-height:1;letter-spacing:-.01em}
   .note.title p{font-size:17px;font-weight:800;color:#6B5420;text-wrap:pretty}
-  .minilcd{background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 14px;padding:6px 10px;flex:none;border:0;touch-action:none;transform:rotate(-2deg);box-shadow:0 2px 0 var(--sticky-sh);transition:transform .2s var(--ease-out)}
-  .minilcd.down{transform:rotate(0) scale(1.06)}
-  .minilcd .lcd{height:34px;width:124px;font-family:var(--fh);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
-  .minilcd.empty{background:var(--card-alt);box-shadow:none;transform:none}
-  .minilcd.empty .lcd{color:var(--mute-dark);font-family:Nunito,sans-serif;font-size:13px;font-weight:800}
+  .minilcd{background:#1A1009;border-radius:10px;padding:5px;flex:none;border:0;touch-action:none;box-shadow:0 3px 0 var(--tang-sh),0 0 0 3px var(--tang);margin:3px;transition:transform .15s var(--ease-out)}
+  .minilcd.down{transform:scale(1.06)}
+  .minilcd .lcd{height:32px;width:124px;font-size:22px;padding:0 4px}
+  .minilcd .lcd,.minilcd.empty .lcd{border-radius:6px;background-color:var(--amber-bg);color:var(--amber);font-family:var(--fpix);text-shadow:0 0 6px rgba(255,179,71,.5);
+    background-image:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.25) 2px 3px);display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
+  .minilcd.empty{opacity:.75}
+  .minilcd.empty .lcd{font-size:18px}
   .preload .minilcd .lcd{width:96px}
   .peekBtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
 
@@ -181,18 +198,19 @@
   details.earlier summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--mute-dark);border-bottom:2.5px solid var(--mute-dark);transform:rotate(45deg);margin:-4px 4px 0 2px;flex:none;transition:transform .15s}
   details.earlier[open] summary::after{transform:rotate(225deg);margin-top:4px}
   details.earlier[open] summary{border-bottom:1px solid var(--card-line)}
-  .wordchip{font-family:var(--fh);font-weight:700;letter-spacing:.03em;background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 10px;padding:3px 10px;font-size:14px;text-transform:uppercase;transform:rotate(-2deg);flex:none}
-  .bezel{background:var(--sticky);border-radius:6px 6px 6px 22px;padding:14px 18px;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--sticky-sh);align-self:center;min-width:60%}
+  .wordchip{font-family:var(--fpix);font-size:19px;line-height:1;background:var(--amber-bg);color:var(--amber);text-shadow:0 0 5px rgba(255,179,71,.45);border-radius:6px;padding:4px 9px 3px;text-transform:uppercase;flex:none;box-shadow:0 0 0 2px #1A1009}
+  .bezel{background:#1A1009;border-radius:12px;padding:7px;align-self:center;min-width:70%;max-width:100%;box-shadow:0 0 0 4px var(--tang),0 6px 0 var(--tang-sh)}
   .mark{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:800;border-radius:999px;padding:3px 9px 3px 7px;flex:none}
   .mark.y{background:var(--ok-bg);color:var(--ok)}.mark.n{background:var(--no-bg);color:var(--no)}
   .delta.zero{color:var(--mute-dark)}
   .bezel{font-size:inherit}
-  .bezel .lcd{font-family:var(--fh);font-weight:700;color:var(--ink-dark);text-align:center;letter-spacing:.03em;white-space:nowrap;overflow:hidden}
+  .bezel .lcd{height:56px;padding:0 10px;border-radius:6px;background-color:var(--amber-bg);color:var(--amber);font-family:var(--fpix);text-shadow:0 0 8px rgba(255,179,71,.6);
+    background-image:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.25) 2px 3px);display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
   .rv{position:relative}
   .rv.new{animation:pop .45s var(--ease-pop)}
   .bezel.rv.new{animation:slap .5s var(--ease-pop)}
   @keyframes pop{0%{transform:scale(.7) translateY(-10px);opacity:0}100%{transform:none;opacity:1}}
-  @keyframes slap{0%{transform:rotate(-14deg) scale(1.5);opacity:0}100%{transform:rotate(-1.5deg);opacity:1}}
+  @keyframes slap{0%{transform:scale(1.4);opacity:0}100%{transform:none;opacity:1}}
   .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:12px;padding:8px;border:2px solid var(--card-line)}
   .qr svg{width:100%;height:100%;display:block}
   .qr.big{width:240px;height:240px;margin:0 auto;padding:12px;border:0;box-shadow:0 12px 24px -10px rgba(20,8,45,.5)}
@@ -203,6 +221,13 @@
   .dupcard{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5)}
   .sheet .card,.sheet .list{box-shadow:none;border:1px solid var(--card-line)}
 
+  /* the James tribute welcome card */
+  .welcome{position:fixed;inset:0;z-index:30;background:var(--table);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right));animation:fade .3s}
+  .welcome .in{max-width:420px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+  .welcome h1{font-family:var(--fh);font-weight:700;font-size:clamp(30px,8.5vw,42px);line-height:1.08;text-wrap:balance}
+  .welcome h1 span{display:inline-block;margin-top:6px;background:var(--sticky);color:var(--ink-dark);padding:0 .22em;border-radius:6px 6px 6px 16px;transform:rotate(-2deg);box-shadow:0 2px 0 var(--sticky-sh)}
+  .welcome p{color:var(--mute);font-size:17px;font-weight:700;text-wrap:pretty}
+  .welcome .btn{max-width:320px}
   /* typing: fold the big note away so the keyboard has room */
   .typing .hero{display:none}
   .typing .heroMini{display:flex !important}
@@ -234,12 +259,11 @@
     .iconbtn:hover{background:rgba(255,255,255,.2)}
     .sheet .iconbtn:hover,.like:hover:not(.on){background:#ECE3F8}
     details.earlier summary:hover{color:var(--grape)}
-    .note.back:hover:not(:disabled){transform:rotate(0)}
     .seg button:hover:not(.y):not(.n){background:#ECE3F8;color:var(--ink-dark)}
   }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
-    .note,.minilcd,.wordchip,.bezel{transform:none !important}
+    .note{transform:none !important}
   }
 </style>
 </head>
@@ -253,7 +277,8 @@
   var S = null;            // latest game view from the server
   var msg = '';            // message shown on the home screen
   var inflight = false;    // a poll is in progress
-  var drafts = { name: '', code: '', clue: '', answers: {}, wagers: {}, hard: false };
+  var drafts = { name: '', code: '', clue: '', answers: {}, wagers: {}, hard: false, tribute: false };
+  var welcomeOpen = false;  // James tribute welcome card
   var baseUrl = '';        // address of this web app, for the QR code
   var toastTimer = null;
   var editing = false;     // editing my own clue
@@ -471,6 +496,7 @@
       if (r.phase !== 'reveal') resultsOpen = false;
     }
     if (editing && !r.canEditClue) editing = false;
+    if (r.tribute && r.round === 1 && r.phase !== 'lobby' && r.phase !== 'ended' && !store('wg_welcome_' + r.code) && !welcomeOpen) { welcomeOpen = true; jingle(); }
     if (r.phase === 'reveal') {
       var pr = (prev && prev.phase === 'reveal' && prev.round === r.round) ? prev.rvc : -1;
       initReveal(prev, r); syncReveal();
@@ -500,7 +526,7 @@
   setInterval(poll, 1800);
 
   function leave(m) {
-    view = ''; menuOpen = false; historyData = null; editing = false; resultsOpen = false; disarm(); stopReveal(); revealKey = '';
+    view = ''; menuOpen = false; welcomeOpen = false; historyData = null; editing = false; resultsOpen = false; disarm(); stopReveal(); revealKey = '';
     S = null; store('wg_code', null); savedCode = ''; msg = m || ''; render();
   }
 
@@ -512,7 +538,7 @@
   }
 
   // ---------- the word: only visible while you hold it ----------
-  var MASK = '&#9679; &#9679; &#9679; &#9679; &#9679;';
+  var MASK = '? ? ? ?';
   var peeking = false;
   function fit(w, base) { var n = w.length || 1; return Math.max(Math.round(base * 0.42), Math.min(base, Math.round(base * 8 / n))); }
   function peek(on) {
@@ -521,30 +547,42 @@
     for (var i = 0; i < l.length; i++) {
       var w = l[i].getAttribute('data-w'), base = +l[i].getAttribute('data-fs') || 30;
       l[i].innerHTML = on ? esc(w) : MASK;
-      l[i].style.fontSize = (on ? fit(w, base) : Math.round(base * 0.6)) + 'px';
-      l[i].style.letterSpacing = on ? '' : '1px';
+      l[i].style.fontSize = (on ? fit(w, base) : Math.round(base * 0.8)) + 'px';
     }
+    try { document.body.classList.toggle('peeking', on); } catch (e) {}
     var k = document.querySelectorAll('.peekBtn');
     for (var j = 0; j < k.length; j++) k[j].classList.toggle('down', on);
   }
   function maskLcd(word, fs, extra) {
-    return '<div class="lcd' + (extra || '') + '" data-w="' + esc(String(word || '').toUpperCase()) + '" data-fs="' + fs + '" style="font-size:' + Math.round(fs * 0.6) + 'px;letter-spacing:1px">' + MASK + '</div>';
+    return '<div class="lcd' + (extra || '') + '" data-w="' + esc(String(word || '').toUpperCase()) + '" data-fs="' + fs + '" style="font-size:' + Math.round(fs * 0.8) + 'px">' + MASK + '</div>';
   }
   function showLcd(text, fs, cls) { var t = String(text || '').toUpperCase(); return '<div class="lcd' + (cls || '') + '" style="font-size:' + (fs ? fit(t, fs) + 'px' : '') + '">' + esc(t) + '</div>'; }
 
-  // The word lives on a sticky note. mode: 'get' (face-down card: tap to draw), 'word' (hold to peek), 'sent', 'idle'
+  // The word lives on the Pocket Thinker. mode: 'get' (press to draw), 'word' (hold to peek), 'sent', 'idle'
   function device(mode, word, opt) {
     opt = opt || {};
-    var fs = opt.sm ? 28 : 38, sm = opt.sm ? ' sm' : '';
-    if (mode === 'word')
-      return '<button class="note peekBtn' + sm + '" aria-label="Press and hold to see your word">' + maskLcd(word, fs) + '<span class="cap"><span class="off">Press and hold to peek</span><span class="on">Let go to hide it</span></span></button>';
-    if (mode === 'get')
-      return '<button class="note back' + sm + '" id="' + (opt.id || 'redBtn') + '" aria-label="Draw your word"><span class="q" aria-hidden="true">?</span><span class="cap" style="color:var(--mute-dark)">Tap to draw your word</span></button>';
-    if (mode === 'sent')
-      return '<div class="note sent' + sm + '"><span class="stamp">' + I.check + 'Clue sent</span></div>';
-    return '<div class="note' + sm + '"><div class="lcd msg">' + esc(opt.text || 'Hello') + '</div></div>';
+    var sm = opt.sm ? ' sm' : '', fs = opt.sm ? 32 : 38, screen, btn, cap = '';
+    if (mode === 'word') {
+      screen = maskLcd(word, fs);
+      btn = '<button class="big peekBtn" aria-label="Press and hold to see your word"></button>';
+      cap = '<p class="ptcap"><span class="off">Hold the big button to see your word</span><span class="on">Let go to hide it</span></p>';
+    } else if (mode === 'get') {
+      screen = '<div class="lcd msg">PRESS TO<br>DRAW</div>';
+      btn = '<button class="big" id="' + (opt.id || 'redBtn') + '" aria-label="Draw your word"></button>';
+    } else if (mode === 'sent') {
+      screen = '<div class="lcd msg">CLUE<br>SENT</div>';
+      btn = '<button class="big" disabled aria-hidden="true" tabindex="-1"></button>';
+    } else {
+      screen = '<div class="lcd msg">' + esc(String(opt.text || 'HELLO!').toUpperCase()) + '</div>';
+      btn = '<button class="big" disabled aria-hidden="true" tabindex="-1"></button>';
+    }
+    return '<div class="pt' + sm + (mode === 'sent' ? ' sent' : '') + '"><div class="shell"></div><span class="strap" aria-hidden="true"></span><span class="pname" aria-hidden="true">POCKET THINKER</span>' +
+      '<div class="screen">' + screen + '</div><div class="keys" aria-hidden="true"><i></i><i></i><i></i></div><span class="speaker" aria-hidden="true"></span>' + btn + '</div>' + cap;
   }
-  // A small sticky note you hold to read: your word while judging, and next round's word.
+  // The Pocket Thinker's beep.
+  function chirp() { try { initAudio(); if (!actx) return; if (actx.state === 'suspended' && actx.resume) actx.resume(); tone(988, 0, 0.08); tone(1319, 0.09, 0.12); } catch (e) {} }
+  function jingle() { try { initAudio(); if (!actx) return; [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.1, 0.12); }); } catch (e) {} }
+  // A small screen you hold to read: your word while editing, and next round's word.
   function miniWord(word) {
     return '<button class="minilcd peekBtn" aria-label="Hold to see the word">' + maskLcd(word, 15) + '</button>';
   }
@@ -590,14 +628,14 @@
     if (s.phase === 'ended' || s.phase === 'draw') return '';
     var has = !!s.myPre;
     return '<div class="card preload" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' +
-      (has ? miniWord(s.myPre) : '<div class="minilcd empty"><div class="lcd">No word yet</div></div>') +
+      (has ? miniWord(s.myPre) : '<div class="minilcd empty"><div class="lcd">NO WORD</div></div>') +
       '<div style="flex:1;min-width:0"><p style="font-weight:800;font-size:15px">' + (s.phase === 'lobby' ? 'Your first word' : 'Next round&rsquo;s word') + '</p><p style="font-size:14px;color:var(--mute)">' + (has ? 'Hold to peek. Only you see it.' : 'Grab it now to think ahead.') + '</p></div>' +
       '<button class="btn sm" id="preBtn" style="width:auto;padding:0 14px">' + (has ? I.swap + 'Swap' : 'Get') + '</button></div>';
   }
 
   function rulesHtml() {
     return '<div class="rules">' +
-      '<p>Everyone starts with <b>5 chips</b>. Each round, everyone gets a secret word at the same time. Draw yours, press and hold the sticky note to peek, and write a clue that describes it without saying it.</p>' +
+      '<p>Everyone starts with <b>5 chips</b>. Each round, everyone gets a secret word at the same time. Press the big button on the Pocket Thinker to draw yours, hold it to peek, and write a clue that describes it without saying it.</p>' +
       '<p>When all the clues are in, everyone answers everyone else&rsquo;s clues. You can change your answers until everyone has locked in.</p>' +
       '<p>A correct guess earns <b>1 chip</b>. The clue writer earns 1 chip per correct guess, <b>unless everyone gets it</b> &mdash; then the writer gets nothing.</p>' +
       '<p>You can <b>wager a chip</b> on an answer: right earns 2, wrong loses 1 &mdash; unless nobody got that clue, then you keep it.</p>' +
@@ -631,6 +669,7 @@
       s.players.map(function (p) {
         return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' (you)' : '(you)') : '') + '</span></div>';
       }).join('') + '</div>' +
+      (s.isHost ? '<button class="toggle" id="tributeBtn" aria-pressed="' + !!drafts.tribute + '"><span><b>James tribute</b><small>Everyone starts with James&rsquo;s welcome</small></span><span class="sw' + (drafts.tribute ? ' on' : '') + '"><i></i></span></button>' : '') +
       (s.isHost ? '<button class="toggle" id="hardBtn" aria-pressed="' + !!drafts.hard + '"><span><b>Hard mode</b><small>Clues can&rsquo;t hint at letters, length, syllables or rhymes</small></span><span class="sw' + (drafts.hard ? ' on' : '') + '"><i></i></span></button>' : '') +
       preloadCard(s);
     var bar = s.isHost
@@ -645,7 +684,7 @@
     var left = s.needCount - s.doneCount;
     if (!s.hasWord) {
       main = '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">' + device('get') +
-        '<p class="hint">Everyone writes at the same time.<br>Draw a word and describe it without saying it.</p></div>';
+        '<p class="hint">Everyone writes at the same time.<br>Press the big button to draw your word.</p></div>';
       bar = whoRow(s, plural(s.doneCount, 'clue') + ' in') + '<button class="btn pri" id="getBtn">Get my word</button>';
     } else if (!s.myClue || (editing && s.canEditClue)) {
       var ed = !!s.myClue;
@@ -791,7 +830,7 @@
         '<div class="card' + (fresh && shown - 1 === base ? ' rv new' : '') + '" style="display:flex;flex-direction:column;gap:12px">' +
         '<div style="display:flex;align-items:flex-start;gap:10px"><p class="h" style="flex:1;font-size:22px;font-weight:600;line-height:1.28;word-wrap:break-word">' + esc(c.clue) + '</p>' +
         (cdone ? likeBtn(s, 'clue', c.giverId, '', c.giverId === s.me, esc(c.giverName) + '’s clue') : '') + '</div>' +
-        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 36) + '</div>' : '') +
+        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 44) + '</div>' : '') +
         (inner ? '<div>' + inner + '</div>' : '') +
         (wordShown && c.allCorrect ? '<p class="hint">Everyone got it, so the writer scores nothing.</p>' : '') + '</div>';
       // earlier clues, folded away
@@ -806,7 +845,7 @@
     } else {
       var up = r.clues[s.rvc];
       main = '<div class="center" style="padding-top:12px"><h2 class="h" style="font-size:28px;font-weight:700">' + (up ? (up.giverId === s.me ? 'You&rsquo;re up first' : esc(up.giverName) + '&rsquo;s up first') : 'Time for the reveal') + '</h2><p style="color:var(--mute);margin-top:6px">Each writer flips over the answers to their own clue.</p></div>' +
-        '<div class="note back" aria-hidden="true"><span class="q">?</span><span class="cap" style="color:var(--mute-dark)">' + plural(N, 'clue') + ' to reveal</span></div>';
+        device('idle', '', { sm: true, text: plural(N, 'clue') + ' to reveal' });
     }
     if (!done) {
       if (shown < lim) bar = '<button class="btn ghost" id="skipBtn">Skip animation</button>';
@@ -896,6 +935,11 @@
     return screen(pageTop('Invite players'), main, '<button class="btn" id="shareBtn">' + I.share + 'Invite by text</button><button class="btn pri" id="backBtn2">Back to the game</button>');
   }
 
+  function welcomeCard() {
+    return '<div class="welcome" role="dialog" aria-label="Welcome"><div class="in">' + device('idle', '', { sm: true, text: 'Welcome!' }) +
+      '<h1>Welcome to the wonderful world of <span translate="no">Thinkamajig</span></h1><p>For James, who started every game this way.</p>' +
+      '<button class="btn pri" id="welcomeBtn">Let&rsquo;s play</button></div></div>';
+  }
   function rulesScreen() { return screen(pageTop('How to play'), rulesHtml(), ''); }
 
   function menuSheet(s) {
@@ -947,6 +991,7 @@
     var openDet = [];
     var dets = document.querySelectorAll('details'); for (var di = 0; di < dets.length; di++) if (dets[di].open) openDet.push(di);
     if (S && menuOpen && !view && S.phase !== 'ended') html += menuSheet(S);
+    if (S && welcomeOpen) html += welcomeCard();
     app.innerHTML = html;
     render.key = key;
     if (key === prevKey) {
@@ -1003,6 +1048,7 @@
       el.addEventListener('click', function () { var g = el.getAttribute('data-g'); drafts.wagers[g] = !drafts.wagers[g]; render(); });
     })(wcs[wi]);
     on('hardBtn', function () { drafts.hard = !drafts.hard; render(); });
+    on('tributeBtn', function () { drafts.tribute = !drafts.tribute; render(); });
     var hb = document.querySelectorAll('.peekBtn');
     for (var hi = 0; hi < hb.length; hi++) (function (b) {
       ['mousedown', 'touchstart'].forEach(function (ev) { b.addEventListener(ev, function (e) { if (e.cancelable) e.preventDefault(); peek(true); }); });
@@ -1034,9 +1080,9 @@
       drafts.name = n; act(b, 'Rejoining…', 'join', { name: n, code: savedCode });
     });
     on('rulesBtn', function () { menuOpen = false; view = 'rules'; render(); });
-    on('startBtn', function (b) { act(b, 'Starting…', 'start', { hard: !!drafts.hard }); });
-    on('redBtn', function (b) { act(b, 'WAIT', 'draw'); });
-    on('getBtn', function (b) { var k = $('redBtn'); if (k) k.classList.add('busy'); act(b, 'Getting your word…', 'draw'); });
+    on('startBtn', function (b) { act(b, 'Starting…', 'start', { hard: !!drafts.hard, tribute: !!drafts.tribute }); });
+    on('redBtn', function (b) { chirp(); act(b, '', 'draw'); });
+    on('getBtn', function (b) { chirp(); var k = $('redBtn'); if (k) k.classList.add('busy'); act(b, 'Getting your word…', 'draw'); });
     on('swapBtn', function (b) { act(b, 'Swapping…', 'draw'); });
     on('preBtn', function (b) { act(b, '…', 'preload'); });
     on('clueBtn', function (b) {
@@ -1108,6 +1154,7 @@
       run('leave', {}, function () { leave(''); });
     });
     on('doneBtn', function () { leave(''); });
+    on('welcomeBtn', function () { if (S) store('wg_welcome_' + S.code, '1'); welcomeOpen = false; render(); });
     var rms = document.querySelectorAll('.rmBtn');
     for (var ri = 0; ri < rms.length; ri++) (function (b) {
       b.addEventListener('click', function () {

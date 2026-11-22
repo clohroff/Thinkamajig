@@ -276,7 +276,7 @@ function view_(g, pid) {
 
   var v = {
     ok: true, code: g.code, v: g.v, phase: phase, hostId: g.hostId, isHost: g.hostId === pid, me: pid,
-    round: g.round, players: players, minPlayers: MIN_PLAYERS, pool: g.pool, hard: !!g.hard,
+    round: g.round, players: players, minPlayers: MIN_PLAYERS, pool: g.pool, hard: !!g.hard, tribute: !!g.tribute,
     inRound: inRound, doneCount: done, needCount: need, allDone: need > 0 && done >= need,
     hasWord: !!g.words[pid], myWord: g.words[pid] || '', myClue: g.cl[pid] || '',
     myPre: (meP && meP.pre) ? meP.pre : '',
@@ -358,7 +358,7 @@ function handle_(action, p) {
     var name = clean_(p.name, 16);
     if (!name) return { ok: false, err: 'Enter your name first.' };
     var g = {
-      code: newCode_(), v: 0, phase: 'lobby', hostId: pid, round: 0, pool: START_CHIPS, hard: false,
+      code: newCode_(), v: 0, phase: 'lobby', hostId: pid, round: 0, pool: START_CHIPS, hard: false, tribute: false,
       players: [{ id: pid, name: name, score: START_SCORE }],
       words: {}, cl: {}, rev: {}, entrants: [], guesses: {}, wagers: {}, sub: {}, marks: {},
       awarded: {}, rc: [], rt: {}, hrounds: [], result: null
@@ -400,7 +400,7 @@ function handle_(action, p) {
     if (!isHost) return { ok: false, err: 'Only the host can start.' };
     if (g.phase !== 'lobby') return view_(g, pid);
     if (g.players.length < MIN_PLAYERS) return { ok: false, err: 'Need at least ' + MIN_PLAYERS + ' players.' };
-    g.round = 1; g.hard = !!p.hard; g.pool = START_CHIPS; g.hrounds = [];
+    g.round = 1; g.hard = !!p.hard; g.tribute = !!p.tribute; g.pool = START_CHIPS; g.hrounds = [];
     clearRound_(g);
     enterDraw_(g);
     save_(g);
