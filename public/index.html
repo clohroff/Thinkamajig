@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#3D2470">
 <title>Thinkamajig</title>
 <link rel="preload" href="fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -26,7 +26,7 @@
     --cherry:#D42E49;--cherry-sh:#9E1F35;
     --ok:#0B7A6E;--ok-bg:#E3F6F2;--no:#C42B2B;--no-bg:#FDE8E6;--wg:#8A5A00;--wg-bg:#FFF1C7;
     --fh:Fredoka,Nunito,system-ui,sans-serif;
-    --ease-pop:cubic-bezier(.34,1.56,.64,1);
+    --ease-pop:cubic-bezier(.34,1.56,.64,1);--ease-out:cubic-bezier(.16,1,.3,1);
     /* context colors: on the table (default) */
     --ink:#FFFFFF;--mute:#D9CCF2;--soft:#EDE6FA;--gold:#FFE066;--line:var(--table-line);
   }
@@ -36,11 +36,15 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%;background:var(--table);color:var(--ink);font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.45;font-weight:500}
   p,h1,h2,h3{margin:0}
+  ::selection{background:var(--sticky);color:var(--ink-dark)}
+  .field{caret-color:var(--grape)}
+  .main{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
   b,strong{font-weight:800}
   .h{font-family:var(--fh);letter-spacing:-.01em;font-weight:600}
   #app{height:100%}
   .screen{max-width:480px;margin:0 auto;height:100%;height:100dvh;display:flex;flex-direction:column}
   .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px}
+  .main>*{flex-shrink:0}
   .bar{flex:none;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--table-deep);border-radius:24px 24px 0 0;display:flex;flex-direction:column;gap:8px}
   :focus-visible{outline:3px solid var(--sun);outline-offset:2px}
   .card :focus-visible,.list :focus-visible,.sheet :focus-visible{outline-color:var(--grape)}
@@ -53,12 +57,13 @@
   .pill{display:inline-flex;align-items:center;gap:7px;background:var(--card);color:var(--ink-dark);border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--fh);font-size:17px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
   .dot{width:20px;height:20px;border-radius:50%;background:var(--cherry);display:inline-block;flex:none;box-shadow:inset 0 0 0 3px var(--cherry),inset 0 0 0 5px #fff,0 2px 0 var(--cherry-sh)}
   .steps{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:2px 16px 6px}
-  .st{font-size:13px;font-weight:800;color:var(--mute);opacity:.6;padding-top:7px;border-top:4px solid var(--table-line);border-radius:2px}
+  .st{font-size:13px;font-weight:800;color:#B8A6DC;padding-top:7px;border-top:4px solid var(--table-line);border-radius:2px}
   .st.on{color:#fff;opacity:1;border-top-color:var(--sun)}
-  .st.done{opacity:.85;border-top-color:var(--mute)}
+  .st.done{color:var(--mute);border-top-color:var(--mute)}
 
   /* buttons: chunky, with a lip that collapses when pressed */
-  button{font-family:inherit;cursor:pointer;-webkit-user-select:none;user-select:none}
+  button{font-family:inherit;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+  .main,.sheet{overscroll-behavior:contain}
   .btn{height:56px;width:100%;border-radius:16px;border:0;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;
     color:var(--ink-dark);background:var(--card);box-shadow:0 4px 0 rgba(0,0,0,.28);transition:transform .08s,box-shadow .08s,opacity .15s,background .15s}
   .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 rgba(0,0,0,.28)}
@@ -80,15 +85,17 @@
   .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 
   /* surfaces: index cards */
-  .card{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
-  .list{background:var(--card);color:var(--ink);border-radius:20px;padding:2px 16px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .card{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5)}
+  .list{background:var(--card);color:var(--ink);border-radius:20px;padding:2px 16px;box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5)}
   .li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--card-line);min-height:56px}
   .li:first-child{border-top:0}
   .li .nm{flex:1;min-width:0;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .li .sub{font-size:14px;color:var(--mute);font-weight:600}
   .hint{font-size:15px;color:var(--mute);text-align:center;font-weight:600}
   .err{background:var(--no-bg);color:var(--no);border-radius:14px;padding:12px 14px;font-size:15px;font-weight:700}
-  .rejoin{background:var(--card);color:var(--ink);border-radius:16px;padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .rejoin .btn.good{background:var(--grape);box-shadow:0 4px 0 #2E1A57}
+  .winner{font-family:var(--fh);font-weight:700;font-size:40px;line-height:1.05}
+  .rejoin{background:var(--card);color:var(--ink);border-radius:16px;padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5)}
   .av{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:15px;font-weight:700;color:var(--ink-dark);flex:none}
   .avs{display:inline-flex;padding-left:6px}
   .avs .av{width:28px;height:28px;font-size:12px;margin-left:-7px;border:2px solid var(--table-deep)}
@@ -99,19 +106,20 @@
   .tag.ld{background:var(--wg-bg);color:var(--wg)}
   .ok{color:var(--ok)}.no{color:var(--no)}
   label.lbl{display:block;margin-bottom:6px}
-  .field{width:100%;height:54px;border-radius:14px;background:var(--card);border:2px solid transparent;color:var(--ink-dark);font-size:18px;font-weight:700;padding:0 14px;font-family:inherit;outline:none;box-shadow:0 4px 0 rgba(0,0,0,.22)}
+  .field{width:100%;height:54px;border-radius:14px;background:var(--card);border:2px solid transparent;color:var(--ink-dark);font-size:18px;font-weight:700;padding:0 14px;font-family:inherit;outline:none;box-shadow:0 2px 3px rgba(20,8,45,.2),0 8px 18px -10px rgba(20,8,45,.5)}
   .card .field{background:var(--card-alt);border-color:var(--card-line);box-shadow:none}
-  .field::placeholder{color:#8F80A0;font-weight:600}
+  .field::placeholder{color:#6E5F82;font-weight:600;opacity:1}
+  .codefield::placeholder{font-weight:500;letter-spacing:.12em}
   .field:focus{border-color:var(--sun)}
   .card .field:focus{border-color:var(--grape);background:#fff}
   textarea.field{height:104px;padding:12px 14px;resize:none;line-height:1.4}
   .codefield{font-family:var(--fh);font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-align:center;font-size:21px}
   .sw{width:52px;height:32px;border-radius:999px;background:var(--card-line2);position:relative;border:0;padding:0;flex:none;transition:background .15s}
-  .sw i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s var(--ease-pop);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .sw i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .18s var(--ease-out);box-shadow:0 1px 3px rgba(0,0,0,.25)}
   .sw.on{background:var(--grape)}
   .sw.on i{left:24px}
   .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card-alt);border:0;border-radius:14px;padding:12px 14px;width:100%;text-align:left;color:var(--ink)}
-  .main>.toggle{background:var(--card);box-shadow:0 6px 0 rgba(0,0,0,.18);border-radius:20px;padding:14px 16px}
+  .main>.toggle{background:var(--card);box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5);border-radius:20px;padding:14px 16px}
   .toggle:disabled{opacity:.55}
   .toggle b{display:block;font-size:16px}
   .toggle small{display:block;font-size:14px;color:var(--mute);margin-top:2px;font-weight:600}
@@ -119,14 +127,15 @@
   /* the sticky note: the secret word, the one bold thing */
   .note{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;max-width:290px;min-height:200px;margin:14px auto 6px;padding:30px 18px 20px;
     background:var(--sticky);color:var(--ink-dark);border:0;border-radius:6px 6px 6px 30px;transform:rotate(-2deg);
-    box-shadow:0 2px 0 var(--sticky-sh),0 18px 28px -14px rgba(0,0,0,.55);transition:transform .2s var(--ease-pop),box-shadow .2s;font-family:inherit;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+    box-shadow:0 2px 0 var(--sticky-sh),0 18px 28px -14px rgba(0,0,0,.55);transition:transform .25s var(--ease-out),box-shadow .25s;font-family:inherit;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   .note::before{content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;margin-left:-48px;background:rgba(255,255,255,.55);border-radius:3px;transform:rotate(3deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
   .note.sm{max-width:250px;min-height:150px;padding:24px 16px 16px}
   .note .lcd{font-family:var(--fh);font-weight:700;font-size:34px;line-height:1.05;text-align:center;letter-spacing:.02em;word-break:break-word;min-height:1.1em;display:flex;align-items:center;justify-content:center}
   .note .lcd.msg{font-size:24px}
   .note .cap{font-size:15px;font-weight:800;color:#6B5420}
+  .note .cap .on{display:none}.note.down .cap .on{display:inline}.note.down .cap .off{display:none}
   .note.peekBtn.down{transform:rotate(0deg) translateY(-6px) scale(1.04);box-shadow:0 2px 0 var(--sticky-sh),0 26px 36px -14px rgba(0,0,0,.6)}
-  .note.back{background:var(--card);color:var(--ink-dark);border-radius:20px;transform:rotate(1.5deg);box-shadow:0 8px 0 rgba(0,0,0,.2),0 18px 28px -14px rgba(0,0,0,.5);
+  .note.back{background:var(--card);color:var(--ink-dark);border-radius:20px;transform:rotate(1.5deg);box-shadow:0 2px 3px rgba(20,8,45,.2),0 18px 28px -14px rgba(0,0,0,.5);
     background-image:radial-gradient(circle at 12px 12px,var(--card-alt) 2.5px,transparent 3px);background-size:22px 22px}
   .note.back::before{display:none}
   .note.back .q{width:72px;height:72px;border-radius:50%;background:var(--grape);color:#fff;font-family:var(--fh);font-weight:700;font-size:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #2E1A57}
@@ -135,10 +144,10 @@
   .note.sent{transform:rotate(2deg);opacity:.95}
   .note .stamp{font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ok);border:3px solid var(--ok);border-radius:10px;padding:4px 12px;transform:rotate(-6deg);display:inline-flex;align-items:center;gap:6px}
   .note.title{min-height:0;padding:32px 22px 24px;margin:24px auto 18px;text-align:center}
-  .note p,.bigq,.h{text-wrap:balance}
+  .bigq,.h{text-wrap:balance}
   .note.title h1{font-family:var(--fh);font-weight:700;font-size:44px;line-height:1;letter-spacing:-.01em}
-  .note.title p{font-size:17px;font-weight:800;color:#6B5420}
-  .minilcd{background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 14px;padding:6px 10px;flex:none;border:0;touch-action:none;transform:rotate(-2deg);box-shadow:0 2px 0 var(--sticky-sh);transition:transform .15s var(--ease-pop)}
+  .note.title p{font-size:17px;font-weight:800;color:#6B5420;text-wrap:pretty}
+  .minilcd{background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 14px;padding:6px 10px;flex:none;border:0;touch-action:none;transform:rotate(-2deg);box-shadow:0 2px 0 var(--sticky-sh);transition:transform .2s var(--ease-out)}
   .minilcd.down{transform:rotate(0) scale(1.06)}
   .minilcd .lcd{height:34px;width:124px;font-family:var(--fh);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
   .minilcd.empty{background:var(--card-alt);box-shadow:none;transform:none}
@@ -154,26 +163,30 @@
   .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--card-alt);border-radius:12px;padding:4px;gap:4px}
   .seg button{height:44px;border:0;border-radius:9px;background:transparent;color:var(--mute-dark);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
   .seg button.y{background:var(--ok);color:#fff}
-  .seg button.n{background:var(--no);color:#fff}
+  .seg button.n{background:var(--no-bg);color:var(--no);box-shadow:inset 0 0 0 2px #F3C2BC}
   .seg button.busy{opacity:.7}
   .center{text-align:center}
   .bigcheck{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 5px 0 #075A51;animation:pop .4s var(--ease-pop)}
   .meter{height:12px;border-radius:6px;background:var(--card-alt);overflow:hidden}
-  .meter i{display:block;height:100%;background:var(--cherry);border-radius:6px}
+  .meter i{display:block;height:100%;background:var(--grape);border-radius:6px}
   .upnext{display:flex;align-items:center;gap:10px;background:var(--card);color:var(--ink);border-radius:14px;padding:10px 12px;font-size:15px}
-  .like{height:40px;min-width:44px;justify-content:center;border-radius:10px;border:0;background:var(--card-alt);color:var(--mute-dark);display:inline-flex;align-items:center;gap:5px;padding:0 10px;font-size:14px;font-weight:800;flex:none}
+  .like{height:44px;min-width:44px;justify-content:center;border-radius:10px;border:0;background:var(--card-alt);color:var(--mute-dark);display:inline-flex;align-items:center;gap:5px;padding:0 10px;font-size:14px;font-weight:800;flex:none}
   .like.on{background:var(--grape);color:#fff}
   .likes{font-size:14px;color:var(--mute);font-weight:800;display:inline-flex;align-items:center;gap:4px;flex:none}
   .likes.total{font-size:17px;color:var(--grape)}
   .delta{font-family:var(--fh);font-weight:700;font-size:18px;min-width:34px;text-align:right;flex:none;font-variant-numeric:tabular-nums}
-  details.earlier{background:var(--card);color:var(--ink);border-radius:16px;padding:0 14px;box-shadow:0 4px 0 rgba(0,0,0,.16)}
+  details.earlier{background:var(--card);color:var(--ink);border-radius:16px;padding:0 14px;box-shadow:0 2px 3px rgba(20,8,45,.16),0 10px 20px -10px rgba(20,8,45,.45)}
   details.earlier summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:56px;cursor:pointer}
   details.earlier summary::-webkit-details-marker{display:none}
   details.earlier summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--mute-dark);border-bottom:2.5px solid var(--mute-dark);transform:rotate(45deg);margin:-4px 4px 0 2px;flex:none;transition:transform .15s}
   details.earlier[open] summary::after{transform:rotate(225deg);margin-top:4px}
   details.earlier[open] summary{border-bottom:1px solid var(--card-line)}
   .wordchip{font-family:var(--fh);font-weight:700;letter-spacing:.03em;background:var(--sticky);color:var(--ink-dark);border-radius:4px 4px 4px 10px;padding:3px 10px;font-size:14px;text-transform:uppercase;transform:rotate(-2deg);flex:none}
-  .bezel{background:var(--sticky);border-radius:6px 6px 6px 22px;padding:10px 14px;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--sticky-sh);align-self:center;min-width:60%}
+  .bezel{background:var(--sticky);border-radius:6px 6px 6px 22px;padding:14px 18px;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--sticky-sh);align-self:center;min-width:60%}
+  .mark{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:800;border-radius:999px;padding:3px 9px 3px 7px;flex:none}
+  .mark.y{background:var(--ok-bg);color:var(--ok)}.mark.n{background:var(--no-bg);color:var(--no)}
+  .delta.zero{color:var(--mute-dark)}
+  .bezel{font-size:inherit}
   .bezel .lcd{font-family:var(--fh);font-weight:700;color:var(--ink-dark);text-align:center;letter-spacing:.03em;white-space:nowrap;overflow:hidden}
   .rv{position:relative}
   .rv.new{animation:pop .45s var(--ease-pop)}
@@ -182,12 +195,12 @@
   @keyframes slap{0%{transform:rotate(-14deg) scale(1.5);opacity:0}100%{transform:rotate(-1.5deg);opacity:1}}
   .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:12px;padding:8px;border:2px solid var(--card-line)}
   .qr svg{width:100%;height:100%;display:block}
-  .qr.big{width:240px;height:240px;margin:0 auto;padding:12px;border:0;box-shadow:0 6px 0 rgba(0,0,0,.2)}
-  .bigcode{font-family:var(--fh);font-size:42px;font-weight:700;letter-spacing:.14em;line-height:1.1;color:var(--ink)}
-  .rules{background:var(--card);color:var(--ink);border-radius:20px;padding:18px 18px 6px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .qr.big{width:240px;height:240px;margin:0 auto;padding:12px;border:0;box-shadow:0 12px 24px -10px rgba(20,8,45,.5)}
+  .bigcode{font-family:var(--fh);font-size:clamp(30px,10vw,42px);font-weight:700;letter-spacing:.14em;line-height:1.1;color:var(--ink)}
+  .rules{background:var(--card);color:var(--ink);border-radius:20px;padding:18px 18px 6px;box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5)}
   .rules p{font-size:16px;color:var(--soft);margin-bottom:14px;line-height:1.5}
   .rules b{color:var(--ink)}
-  .dupcard{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .dupcard{background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:0 2px 3px rgba(20,8,45,.18),0 12px 24px -10px rgba(20,8,45,.5)}
   .sheet .card,.sheet .list{box-shadow:none;border:1px solid var(--card-line)}
 
   /* typing: fold the big note away so the keyboard has room */
@@ -196,7 +209,7 @@
 
   /* sheet */
   .scrim{position:fixed;inset:0;background:rgba(30,15,60,.6);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
-  .sheet{width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;background:var(--card);color:var(--ink);border-radius:24px 24px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .22s var(--ease-pop)}
+  .sheet{width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;background:var(--card);color:var(--ink);border-radius:24px 24px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .25s var(--ease-out)}
   .grab{width:44px;height:5px;border-radius:3px;background:var(--card-line2);margin:4px auto 10px}
   .sheet .sect{margin-top:16px}
   .sheet .sect>.lbl{margin-bottom:6px}
@@ -206,12 +219,23 @@
 
   /* toasts */
   .toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink-dark);color:#fff;padding:11px 16px;border-radius:12px;font-size:15px;font-weight:700;max-width:90%;z-index:40;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-  .toast.alert{top:calc(12px + env(safe-area-inset-top));bottom:auto;width:max-content;max-width:min(92%,440px);background:var(--sun);color:var(--ink-dark);font-weight:800;font-size:17px;padding:14px 18px;border-radius:16px;box-shadow:0 5px 0 var(--sun-sh),0 12px 30px rgba(0,0,0,.4);animation:drop .35s var(--ease-pop)}
+  .toast.alert{top:calc(8px + env(safe-area-inset-top));bottom:auto;width:max-content;max-width:min(92%,440px);cursor:pointer;background:var(--card);color:var(--ink-dark);font-weight:800;font-size:17px;padding:12px 16px 12px 12px;border-radius:16px;display:flex;align-items:center;gap:10px;text-align:left;box-shadow:0 2px 3px rgba(20,8,45,.2),0 16px 32px -10px rgba(20,8,45,.6);animation:drop .3s var(--ease-out)}
+  .toast.alert::before{content:"";width:28px;height:28px;flex:none;border-radius:4px 4px 4px 10px;background:var(--sticky);transform:rotate(-6deg);box-shadow:0 2px 0 var(--sticky-sh)}
   @keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}
 
   @media (min-width:900px){
     .main{padding-top:20px}
     .top{padding-top:20px}
+  }
+  @media (hover:hover){
+    .btn:hover:not(:disabled){filter:brightness(1.05)}
+    .btn.pri:hover:not(:disabled){background:#FFD45E}
+    .btn.ghost:hover{text-decoration-color:currentColor}
+    .iconbtn:hover{background:rgba(255,255,255,.2)}
+    .sheet .iconbtn:hover,.like:hover:not(.on){background:#ECE3F8}
+    details.earlier summary:hover{color:var(--grape)}
+    .note.back:hover:not(:disabled){transform:rotate(0)}
+    .seg button:hover:not(.y):not(.n){background:#ECE3F8;color:var(--ink-dark)}
   }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
@@ -252,12 +276,13 @@
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function andList(a) { a = a.map(esc); return a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
   function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
   function sgn(d) { return d > 0 ? '+' + d : (d < 0 ? '&minus;' + (-d) : '0'); }
   function clearToasts() { var old = document.querySelectorAll('.toast'); for (var i = 0; i < old.length; i++) old[i].remove(); }
   function toast(t) {
     clearToasts();
-    var d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d);
+    var d = document.createElement('div'); d.className = 'toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d);
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { d.remove(); }, 2600);
   }
 
@@ -281,7 +306,8 @@
   }
   function alertUser(t) {
     clearToasts();
-    var d = document.createElement('div'); d.className = 'toast alert'; d.textContent = t; document.body.appendChild(d);
+    var d = document.createElement('div'); d.className = 'toast alert'; d.setAttribute('role', 'alert'); d.textContent = t; document.body.appendChild(d);
+    d.addEventListener('click', function () { d.remove(); });   // tap to dismiss
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { d.remove(); }, 5000);
     try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
     beep();
@@ -339,7 +365,7 @@
       a.href = 'sms:?&body=' + encodeURIComponent(text); a.target = '_top'; a.rel = 'noopener';
       document.body.appendChild(a); a.click(); a.remove(); done();
     };
-    btn.classList.add('busy'); btn.disabled = true; btn.innerHTML = 'Opening...';
+    btn.classList.add('busy'); btn.disabled = true; btn.innerHTML = 'Opening…';
     try {
       if (navigator.share) {
         var p = navigator.share({ title: 'Thinkamajig', text: 'Join my Thinkamajig game! Code ' + code, url: joinLink(code) || undefined });
@@ -454,7 +480,7 @@
     if (prev && prev.round === r.round && prev.phase !== r.phase) {
       if (prev.phase === 'draw' && r.phase === 'guess') { if (r.toGuess.length) alertUser('All clues are in. Time to answer!'); }
       else if (prev.phase !== 'judge' && r.phase === 'judge') alertUser(r.myJudge ? 'All answers are in. Time to judge your clue!' : 'All answers are in!');
-      else if (prev.phase === 'judge' && r.phase === 'reveal') alertUser('Results are in!');
+      else if (prev.phase === 'judge' && r.phase === 'reveal') alertUser('Reveal time!');
     }
     if (view === 'history' && phaseChanged && r.phase === 'reveal') loadHistory();
     if (view === 'join' && r.hostId !== r.me) view = '';
@@ -511,7 +537,7 @@
     opt = opt || {};
     var fs = opt.sm ? 28 : 38, sm = opt.sm ? ' sm' : '';
     if (mode === 'word')
-      return '<button class="note peekBtn' + sm + '" aria-label="Press and hold to see your word">' + maskLcd(word, fs) + '<span class="cap">Press and hold to peek</span></button>';
+      return '<button class="note peekBtn' + sm + '" aria-label="Press and hold to see your word">' + maskLcd(word, fs) + '<span class="cap"><span class="off">Press and hold to peek</span><span class="on">Let go to hide it</span></span></button>';
     if (mode === 'get')
       return '<button class="note back' + sm + '" id="' + (opt.id || 'redBtn') + '" aria-label="Draw your word"><span class="q" aria-hidden="true">?</span><span class="cap" style="color:var(--mute-dark)">Tap to draw your word</span></button>';
     if (mode === 'sent')
@@ -526,7 +552,7 @@
   // ---------- shared chrome ----------
   var STEP = { draw: 0, guess: 1, judge: 2, reveal: 3 };
   function topBar(s) {
-    return '<div class="top"><div class="l"><span class="code">' + esc(s.code) + '</span><span class="lbl">' + (s.phase === 'lobby' ? 'Waiting room' : 'Round ' + s.round) + '</span></div>' +
+    return '<div class="top"><div class="l"><span class="code" translate="no">' + esc(s.code) + '</span><span class="lbl">' + (s.phase === 'lobby' ? 'Waiting room' : 'Round ' + s.round) + '</span></div>' +
       '<div class="l" style="gap:8px">' + (s.phase === 'lobby' ? '' : '<span class="pill" aria-label="You have ' + s.myScore + ' chips"><span class="dot"></span>' + s.myScore + '</span>') +
       '<button class="iconbtn" id="menuBtn" aria-label="Menu: scores, history, players">' + I.menu + '</button></div></div>';
   }
@@ -581,14 +607,14 @@
 
   // ---------- screens ----------
   function homeScreen() {
-    var main = '<div class="note title"><h1>Thinkamajig</h1><p>Describe the word. Don&rsquo;t say it.</p></div>' +
+    var main = '<div class="note title"><h1 translate="no">Thinkamajig</h1><p>Describe the word.<br>Don&rsquo;t say it.</p></div>' +
       (msg ? '<div class="err">' + esc(msg) + '</div>' : '') +
       (drafts.dup ? '<div class="dupcard"><p style="margin-bottom:12px">A player named <b>' + esc(drafts.dup.name) + '</b> is already in game ' + esc(drafts.dup.code) + '. Is that you?</p>' +
         '<div style="display:flex;flex-direction:column;gap:8px"><button id="claimBtn" class="btn good">Yes, that&rsquo;s me &mdash; rejoin</button><button id="notMeBtn" class="btn sm">No, I&rsquo;ll use another name</button></div></div>' : '') +
       (savedCode && !drafts.dup ? '<div class="rejoin"><div style="flex:1;min-width:0"><p style="font-size:15px;font-weight:800">Game ' + esc(savedCode) + ' is still going</p><p style="font-size:14px;color:var(--mute)">Jump back in' + (drafts.name ? ' as ' + esc(drafts.name) : '') + '</p></div><button id="rejoinBtn" class="btn good sm" style="width:auto">Rejoin</button></div>' : '') +
       '<div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px">' +
       '<div><label class="lbl" for="name">Your name</label><input class="field" type="text" id="name" name="given-name" maxlength="16" autocomplete="given-name" autocapitalize="words" placeholder="Name"></div>' +
-      '<div><label class="lbl" for="code">Game code</label><input class="field codefield" type="text" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD"></div></div>';
+      '<div><label class="lbl" for="code">Game code</label><input class="field codefield" type="text" id="code" name="game-code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" translate="no" placeholder="ABCD"></div></div>';
     var bar = '<button id="joinBtn" class="btn pri">Join game</button><button id="newBtn" class="btn">Host a new game</button><button id="rulesBtn" class="btn ghost">How to play</button>';
     return screen('', main, bar);
   }
@@ -603,7 +629,7 @@
       '<button class="btn" id="shareBtn">' + I.share + 'Invite by text</button>' +
       '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Players</span><span class="sub">' + s.players.length + ' joined, ' + s.minPlayers + ' needed</span></div>' +
       s.players.map(function (p) {
-        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' (you)' : 'You') : '') + '</span></div>';
+        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><span class="sub">' + (p.id === s.hostId ? 'Host' : '') + (p.id === s.me ? (p.id === s.hostId ? ' (you)' : '(you)') : '') + '</span></div>';
       }).join('') + '</div>' +
       (s.isHost ? '<button class="toggle" id="hardBtn" aria-pressed="' + !!drafts.hard + '"><span><b>Hard mode</b><small>Clues can&rsquo;t hint at letters, length, syllables or rhymes</small></span><span class="sw' + (drafts.hard ? ' on' : '') + '"><i></i></span></button>' : '') +
       preloadCard(s);
@@ -627,13 +653,13 @@
         '<div class="heroMini" style="display:none;align-items:center;gap:12px">' + miniWord(s.myWord) + '<p style="font-size:14px;color:var(--mute)">Hold to peek at your word</p></div>' +
         (ed ? '' : '<div class="hero" style="display:flex;align-items:center;justify-content:center;gap:10px"><p style="font-size:15px;color:var(--mute);font-weight:600">Don&rsquo;t like it?</p><button class="btn sm" id="swapBtn" style="width:auto;height:44px;padding:0 14px">' + I.swap + 'New word</button></div>') +
         '<div class="card" style="padding:14px"><label class="lbl" for="clue">' + (ed ? 'Edit your clue' : 'Your clue') + (s.hard ? ' (hard mode)' : '') + '</label>' +
-        '<textarea class="field" id="clue" maxlength="280" placeholder="Describe it without saying it"></textarea></div>';
+        '<textarea class="field" id="clue" name="clue" maxlength="280" placeholder="Describe it without saying it…"></textarea></div>';
       bar = (ed ? '<div class="row2"><button class="btn" id="cancelClueBtn">Cancel</button><button class="btn pri" id="saveClueBtn">Save clue</button></div>'
                 : whoRow(s, plural(s.doneCount, 'clue') + ' in') + '<button class="btn pri" id="clueBtn">Send clue</button>');
     } else {
       main = device('sent', '', { sm: true }) +
         '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="lbl">Your clue</span>' +
-        (s.canEditClue ? '<button class="btn ghost" id="editClueBtn" style="width:auto;height:32px;padding:0 4px;font-size:14px">' + I.edit + 'Edit</button>' : '') + '</div>' +
+        (s.canEditClue ? '<button class="btn ghost" id="editClueBtn" style="width:auto;height:44px;padding:0 6px;font-size:15px">' + I.edit + 'Edit</button>' : '') + '</div>' +
         '<p class="h" style="font-size:21px;line-height:1.3">' + esc(s.myClue) + '</p></div>' + statusList(s);
       bar = '<p class="hint">' + (left > 0 ? 'Waiting on ' + esc(waitingNames(s)) + '&hellip;' : 'Everyone is in.') + '</p>' +
         (s.isHost && s.canBegin ? armBtn('beginBtn', 'begin', 'Start answering now', 'Tap again to start without them', '') : '');
@@ -645,7 +671,7 @@
   function myClueMini(s) {
     if (!s.myClue || !s.canEditClue) return '';
     return '<div style="display:flex;align-items:center;gap:10px;padding:2px 4px"><p style="flex:1;min-width:0;font-size:14px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Your clue: ' + esc(s.myClue) + '</p>' +
-      '<button class="btn ghost" id="editClueBtn" style="width:auto;height:32px;padding:0 4px;font-size:14px">' + I.edit + 'Edit</button></div>';
+      '<button class="btn ghost" id="editClueBtn" style="width:auto;height:44px;padding:0 6px;font-size:15px">' + I.edit + 'Edit</button></div>';
   }
   function guessPhase(s) {
     var main = '', bar = '';
@@ -655,7 +681,7 @@
       return screen(topBar(s) + steps(s), main, bar);
     }
     if (editing && s.canEditClue) {
-      main = '<div class="card" style="padding:14px"><label class="lbl" for="clue">Edit your clue' + (s.hard ? ' (hard mode)' : '') + '</label><textarea class="field" id="clue" maxlength="280"></textarea></div>' +
+      main = '<div class="card" style="padding:14px"><label class="lbl" for="clue">Edit your clue' + (s.hard ? ' (hard mode)' : '') + '</label><textarea class="field" id="clue" name="clue" maxlength="280"></textarea></div>' +
         '<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">' + miniWord(s.myWord) + '<p style="font-size:14px;color:var(--mute)">Hold to peek at your word</p></div>';
       bar = '<div class="row2"><button class="btn" id="cancelClueBtn">Cancel</button><button class="btn pri" id="saveClueBtn">Save clue</button></div>';
       return screen(topBar(s) + steps(s), main, bar);
@@ -686,13 +712,13 @@
       '<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:16px">' +
       '<div style="display:flex;align-items:center;gap:10px">' + av(c.id, c.name) + '<span style="font-weight:600">' + esc(c.name) + '&rsquo;s clue</span>' + (c.edited ? '<span class="tag ed">Edited</span>' : '') + '</div>' +
       '<p class="h bigq">' + esc(c.clue) + '</p>' +
-      '<div><label class="lbl" for="ans_' + esc(c.id) + '">Your answer</label><input class="field ans" type="text" id="ans_' + esc(c.id) + '" data-g="' + esc(c.id) + '" maxlength="40" autocomplete="off" autocapitalize="none" enterkeyhint="' + (next ? 'next' : 'done') + '" placeholder="Type your guess"></div>' +
+      '<div><label class="lbl" for="ans_' + esc(c.id) + '">Your answer</label><input class="field ans" type="text" id="ans_' + esc(c.id) + '" data-g="' + esc(c.id) + '" name="guess" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="' + (next ? 'next' : 'done') + '" placeholder="Type your guess…"></div>' +
       '<button class="toggle wgtog" data-g="' + esc(c.id) + '" aria-pressed="' + chk + '"' + (canW ? '' : ' disabled') + '><span><b>Wager a chip</b><small>' +
       (s.wagerLimit < 1 ? 'You need a chip to wager' : (canW ? 'Right: +2. Wrong: &minus;1.' : 'No chips left to wager')) + '</small></span><span class="sw' + (chk ? ' on' : '') + '"><i></i></span></button></div>' +
       '<div class="row2">' + (prev ? '<button class="btn sm" id="prevBtn">' + I.left + esc(prev.name) + '&rsquo;s</button>' : '<span></span>') +
       (next ? '<button class="btn sm" id="nextClueBtn">' + esc(next.name) + '&rsquo;s' + I.right + '</button>' : '<span></span>') + '</div>' + myClueMini(s);
     bar = '<p class="hint">You can change answers until everyone locks in</p>' +
-      '<button class="btn pri" id="guessBtn">' + I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ', ' + plural(used, 'wager') : '') + '</button>';
+      '<button class="btn' + (answered ? ' pri' : '') + '" id="guessBtn">' + I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ', ' + plural(used, 'wager') : '') + '</button>';
     return screen(topBar(s) + steps(s), main, bar);
   }
 
@@ -701,9 +727,9 @@
     var main = '', bar = '', j = s.myJudge;
     if (j) {
       var right = j.rows.filter(function (e) { return e.ok; }).length, all = j.rows.length > 0 && right === j.rows.length;
-      main = '<div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 14px">' + miniWord(j.word) +
+      main = '<div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 14px"><span class="wordchip" style="font-size:17px;padding:6px 12px">' + esc(j.word) + '</span>' +
         '<div style="flex:1;min-width:0"><p class="lbl">Your clue</p><p style="font-size:14px;margin-top:2px">' + esc(j.clue) + '</p></div></div>' +
-        '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Their answers</span><span class="sub">Pre-marked for you</span></div>' +
+        '<div class="list"><div class="li" style="min-height:44px;justify-content:space-between"><span class="lbl">Their answers</span><span class="sub">We guessed. Tap to fix.</span></div>' +
         (j.rows.length ? j.rows.map(function (e) {
           return '<div class="li" style="flex-direction:column;align-items:stretch;gap:10px"><div style="display:flex;align-items:center;gap:12px">' + av(e.id, e.name) +
             '<div style="flex:1;min-width:0"><p class="sub">' + esc(e.name) + (e.wager ? '<span class="tag wg">Wager</span>' : '') + '</p><p style="font-size:18px;font-weight:600;word-wrap:break-word">' + (e.answered ? esc(e.guess) : '<span style="color:var(--mute)">(no answer)</span>') + '</p></div></div>' +
@@ -737,9 +763,10 @@
     return '<button class="like likeBtn' + (mine ? ' on' : '') + '" aria-pressed="' + mine + '" aria-label="Like ' + esc(label) + '" data-kind="' + kind + '" data-clue="' + esc(clue) + '" data-target="' + esc(target) + '">' + I.up + (ls.length || '') + '</button>';
   }
   function entryRow(s, c, e, cls, live) {
-    return '<div class="li ' + cls + '">' + av(e.id, e.name) + '<div style="flex:1;min-width:0"><p class="sub">' + esc(e.name) + (e.wager ? '<span class="tag wg">' + (e.saved ? 'Wager kept' : 'Wager') + '</span>' : '') + '</p>' +
+    return '<div class="li ' + cls + '">' + av(e.id, e.name) + '<div style="flex:1;min-width:0"><p class="sub" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px">' + esc(e.name) +
+      '<span class="mark ' + (e.ok ? 'y">' + I.check + 'Right' : 'n">' + I.x + 'Wrong') + '</span>' + (e.wager ? '<span class="tag wg" style="margin:0">' + (e.saved ? 'Wager kept' : 'Wager') + '</span>' : '') + '</p>' +
       '<p style="font-size:17px;font-weight:600;word-wrap:break-word">' + (e.answered ? esc(e.guess) : '<span style="color:var(--mute)">(no answer)</span>') + '</p></div>' +
-      '<span class="delta ' + (e.ok ? 'ok' : 'no') + '">' + sgn(e.delta) + '</span>' +
+      '<span class="delta ' + (e.delta > 0 ? 'ok' : (e.delta < 0 ? 'no' : 'zero')) + '">' + sgn(e.delta) + '</span>' +
       (live && e.answered ? likeBtn(s, 'answer', c.giverId, e.id, e.id === s.me, e.name + '’s answer') : '') + '</div>';
   }
   function revealPhase(s) {
@@ -764,7 +791,7 @@
         '<div class="card' + (fresh && shown - 1 === base ? ' rv new' : '') + '" style="display:flex;flex-direction:column;gap:12px">' +
         '<div style="display:flex;align-items:flex-start;gap:10px"><p class="h" style="flex:1;font-size:22px;font-weight:600;line-height:1.28;word-wrap:break-word">' + esc(c.clue) + '</p>' +
         (cdone ? likeBtn(s, 'clue', c.giverId, '', c.giverId === s.me, esc(c.giverName) + '’s clue') : '') + '</div>' +
-        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 28) + '</div>' : '') +
+        (wordShown ? '<div class="bezel' + (fresh && shown - 1 === wi ? ' rv new' : '') + '" style="padding:8px 12px">' + showLcd(c.word, 36) + '</div>' : '') +
         (inner ? '<div>' + inner + '</div>' : '') +
         (wordShown && c.allCorrect ? '<p class="hint">Everyone got it, so the writer scores nothing.</p>' : '') + '</div>';
       // earlier clues, folded away
@@ -777,7 +804,9 @@
       }
       if (earlier) main += '<p class="lbl" style="margin-top:4px">Earlier clues</p>' + earlier;
     } else {
-      main = '<div class="center" style="padding-top:20px"><h2 class="h" style="font-size:26px;font-weight:700">Time for the reveal</h2><p style="color:var(--mute);margin-top:6px">Each writer shows the answers to their own clue, one at a time.</p></div>';
+      var up = r.clues[s.rvc];
+      main = '<div class="center" style="padding-top:12px"><h2 class="h" style="font-size:28px;font-weight:700">' + (up ? (up.giverId === s.me ? 'You&rsquo;re up first' : esc(up.giverName) + '&rsquo;s up first') : 'Time for the reveal') + '</h2><p style="color:var(--mute);margin-top:6px">Each writer flips over the answers to their own clue.</p></div>' +
+        '<div class="note back" aria-hidden="true"><span class="q">?</span><span class="cap" style="color:var(--mute-dark)">' + plural(N, 'clue') + ' to reveal</span></div>';
     }
     if (!done) {
       if (shown < lim) bar = '<button class="btn ghost" id="skipBtn">Skip animation</button>';
@@ -796,7 +825,7 @@
     return '<div class="list">' + sorted.map(function (p, i) {
       var d = deltas ? deltas[p.name] : undefined;
       return '<div class="li"><span style="width:18px;color:var(--mute);font-weight:700">' + (i + 1) + '</span>' + av(p.id, p.name) +
-        '<span class="nm">' + esc(p.name) + (p.id === s.me ? ' <span class="sub">(you)</span>' : '') + (tags && p.id === s.hostId ? '<span class="tag ld">Leader</span>' : '') + '</span>' +
+        '<span class="nm">' + esc(p.name) + (p.id === s.me ? ' <span class="sub">(you)</span>' : '') + (tags && p.id === s.hostId ? '<span class="tag ld">Host</span>' : '') + '</span>' +
         (d !== undefined ? '<span class="delta ' + (d > 0 ? 'ok' : (d < 0 ? 'no' : '')) + '" style="font-size:14px">' + sgn(d) + '</span>' : '') +
         '<span class="pill" style="min-width:58px;justify-content:center"><span class="dot"></span>' + p.score + '</span></div>';
     }).join('') + '</div>';
@@ -821,7 +850,7 @@
       standings(s, deltas) + poolCard(s) +
       '<div class="row2"><button class="btn sm" id="backCluesBtn">' + I.left + 'This round</button><button class="btn sm" id="histBtn">Game history</button></div>' + preloadCard(s);
     var bar = s.isHost ? '<button id="nextBtn" class="btn pri">' + (s.pool <= 0 ? 'Finish game' : 'Start round ' + (s.round + 1)) + '</button>'
-      : '<p class="hint" style="padding:14px 0">Waiting for ' + esc(host ? host.name : 'the leader') + ' to start the next round&hellip;</p>';
+      : '<p class="hint" style="padding:14px 0">Waiting for ' + esc(host ? host.name : 'the host') + ' to start the next round&hellip;</p>';
     return screen(topBar(s) + steps(s), main, bar);
   }
 
@@ -829,7 +858,8 @@
     var sorted = s.players.slice().sort(function (a, b) { return b.score - a.score; });
     var top = sorted.length ? sorted[0].score : 0, winners = sorted.filter(function (p) { return p.score === top && top > 0; });
     var head = winners.length === 1 ? (winners[0].id === s.me ? 'You win!' : esc(winners[0].name) + ' wins!') : (winners.length ? 'It&rsquo;s a tie!' : 'Game over');
-    var main = '<div class="center" style="padding-top:8px">' + device('idle', '', { sm: true, text: 'The end' }) + '<p class="lbl" style="margin-top:18px">Game over</p><h1 class="h" style="font-size:34px;font-weight:700;margin-top:4px">' + head + '</h1></div>' +
+    var main = '<div class="note title" style="margin-top:28px"><p>Game over</p><h1 class="winner">' + head + '</h1>' +
+      (winners.length ? '<p>' + andList(winners.map(function (w) { return w.id === s.me ? 'You' : w.name; })) + ' finished with ' + top + ' chips</p>' : '') + '</div>' +
       standings(s) + '<button class="btn" id="histBtn">Game history</button>';
     return screen('', main, '<button id="doneBtn" class="btn pri">Back to start</button>');
   }
@@ -841,7 +871,7 @@
     else if (!h.rounds.length) b += '<p class="hint" style="padding:30px 0">No finished rounds yet.</p>';
     else {
       var tl = 0; h.rounds.forEach(function (rd) { rd.clues.forEach(function (c) { tl += c.likes || 0; c.entries.forEach(function (e) { tl += e.likes || 0; }); }); });
-      b += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px"><span class="lbl">Total likes</span><span class="likes total">' + I.up + tl + '</span></div>';
+      if (tl) b += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px"><span class="lbl">Total likes</span><span class="likes total">' + I.up + tl + '</span></div>';
       h.rounds.slice().reverse().forEach(function (rd) {
         b += '<p class="lbl" style="margin-top:6px">Round ' + rd.round + '</p>';
         rd.clues.forEach(function (c) {
@@ -850,7 +880,7 @@
             '<div style="padding:10px 0"><p style="font-size:15px;margin-bottom:4px">' + esc(c.clue) + '</p>' +
             c.entries.map(function (e) {
               return '<div class="li"><div style="flex:1;min-width:0"><p class="sub">' + esc(e.name) + (e.wager ? '<span class="tag wg">Wager</span>' : '') + '</p><p style="font-weight:600">' + (e.answered ? esc(e.guess) : '<span style="color:var(--mute)">(no answer)</span>') + '</p></div>' +
-                (e.likes ? '<span class="likes">' + I.up + e.likes + '</span>' : '') + '<span class="' + (e.ok ? 'ok' : 'no') + '" style="font-weight:700;font-size:14px">' + (e.ok ? 'Right' : 'Wrong') + '</span></div>';
+                (e.likes ? '<span class="likes">' + I.up + e.likes + '</span>' : '') + '<span class="mark ' + (e.ok ? 'y">' + I.check + 'Right' : 'n">' + I.x + 'Wrong') + '</span></div>';
             }).join('') + '</div></details>';
         });
       });
@@ -880,8 +910,8 @@
       '<button class="btn sm" id="shareBtn2">' + I.share + 'Invite by text</button>' +
       '<button class="btn sm" id="rulesBtn">How to play</button></div>';
     if (s.isHost && s.players.length > 1) {
-      o += '<div class="sect"><p class="lbl">Leader tools</p><div class="list">' + s.players.filter(function (p) { return p.id !== s.me; }).map(function (p) {
-        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><button class="btn sm rmBtn" data-id="' + esc(p.id) + '" style="width:auto;height:36px;font-size:13px;padding:0 12px">Remove</button></div>';
+      o += '<div class="sect"><p class="lbl">Host tools</p><div class="list">' + s.players.filter(function (p) { return p.id !== s.me; }).map(function (p) {
+        return '<div class="li">' + av(p.id, p.name) + '<span class="nm">' + esc(p.name) + '</span><button class="btn sm rmBtn" data-id="' + esc(p.id) + '" style="width:auto;height:44px;font-size:14px;padding:0 14px">Remove</button></div>';
       }).join('') + '</div>' +
         (s.phase === 'draw' && s.canBegin ? '<div style="margin-top:8px">' + armBtn('menuBeginBtn', 'mbegin', 'Start answering now', 'Tap again to start without them', 'sm') + '</div>' : '') +
         (s.phase === 'guess' ? '<div style="margin-top:8px">' + armBtn('menuRevealBtn', 'mreveal', 'Move on to judging', 'Tap again to move on', 'sm') + '</div>' : '') +
@@ -978,45 +1008,48 @@
       ['mousedown', 'touchstart'].forEach(function (ev) { b.addEventListener(ev, function (e) { if (e.cancelable) e.preventDefault(); peek(true); }); });
       ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) { b.addEventListener(ev, function () { peek(false); }); });
       b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+      b.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!peeking) peek(true); } });
+      b.addEventListener('keyup', function (e) { if (e.key === ' ' || e.key === 'Enter') peek(false); });
+      b.addEventListener('blur', function () { if (peeking) peek(false); });
     })(hb[hi]);
 
     on('joinBtn', function (b) {
       var n = (drafts.name || '').trim(), c = (drafts.code || '').trim().toUpperCase();
       if (!n) { toast('Enter your name first.'); return; }
       if (c.length !== 4) { toast('Enter the 4-letter game code.'); return; }
-      drafts.name = n; act(b, 'Joining...', 'join', { name: n, code: c });
+      drafts.name = n; act(b, 'Joining…', 'join', { name: n, code: c });
     });
     on('newBtn', function (b) {
       var n = (drafts.name || '').trim();
       if (!n) { toast('Enter your name first.'); return; }
-      drafts.name = n; act(b, 'Creating...', 'create', { name: n });
+      drafts.name = n; act(b, 'Creating…', 'create', { name: n });
     });
     on('claimBtn', function (b) {
       var d = drafts.dup; if (!d) return;
-      act(b, 'Rejoining...', 'join', { name: d.name, code: d.code, claim: true });
+      act(b, 'Rejoining…', 'join', { name: d.name, code: d.code, claim: true });
     });
     on('notMeBtn', function () { drafts.dup = null; render(); });
     on('rejoinBtn', function (b) {
       var n = (drafts.name || '').trim() || 'Player';
-      drafts.name = n; act(b, 'Rejoining...', 'join', { name: n, code: savedCode });
+      drafts.name = n; act(b, 'Rejoining…', 'join', { name: n, code: savedCode });
     });
     on('rulesBtn', function () { menuOpen = false; view = 'rules'; render(); });
-    on('startBtn', function (b) { act(b, 'Starting...', 'start', { hard: !!drafts.hard }); });
+    on('startBtn', function (b) { act(b, 'Starting…', 'start', { hard: !!drafts.hard }); });
     on('redBtn', function (b) { act(b, 'WAIT', 'draw'); });
-    on('getBtn', function (b) { var k = $('redBtn'); if (k) k.classList.add('busy'); act(b, 'Getting your word...', 'draw'); });
-    on('swapBtn', function (b) { act(b, 'Swapping...', 'draw'); });
-    on('preBtn', function (b) { act(b, '...', 'preload'); });
+    on('getBtn', function (b) { var k = $('redBtn'); if (k) k.classList.add('busy'); act(b, 'Getting your word…', 'draw'); });
+    on('swapBtn', function (b) { act(b, 'Swapping…', 'draw'); });
+    on('preBtn', function (b) { act(b, '…', 'preload'); });
     on('clueBtn', function (b) {
       var t = (drafts.clue || '').trim(); if (!t) { toast('Type a clue first.'); return; }
-      act(b, 'Sending...', 'clue', { clue: t });
+      act(b, 'Sending…', 'clue', { clue: t });
     });
     on('editClueBtn', function () { editing = true; drafts.clue = S.myClue; render(); var c = $('clue'); if (c) c.focus(); });
     on('cancelClueBtn', function () { editing = false; drafts.clue = ''; render(); });
     on('saveClueBtn', function (b) {
       var t = (drafts.clue || '').trim(); if (!t) { toast('Type a clue first.'); return; }
-      act(b, 'Saving...', 'editclue', { clue: t }, function () { editing = false; drafts.clue = ''; });
+      act(b, 'Saving…', 'editclue', { clue: t }, function () { editing = false; drafts.clue = ''; });
     });
-    onArm('beginBtn', 'begin', function (b) { act(b, 'Starting...', 'begin'); });
+    onArm('beginBtn', 'begin', function (b) { act(b, 'Starting…', 'begin'); });
     on('prevBtn', function () { gi--; render(); });
     on('nextClueBtn', function () { gi++; render(); });
     on('guessBtn', function (b) {
@@ -1028,35 +1061,35 @@
         if (drafts.wagers[c.id]) wagers[c.id] = true;
       });
       if (!any) { toast('Type at least one answer first.'); return; }
-      act(b, 'Locking in...', 'guess', { answers: answers, wagers: wagers });
+      act(b, 'Locking in…', 'guess', { answers: answers, wagers: wagers });
     });
     on('unlockBtn', function (b) {
-      act(b, 'Unlocking...', 'unlock', {}, function (r) {
+      act(b, 'Unlocking…', 'unlock', {}, function (r) {
         drafts.answers = {}; drafts.wagers = {}; gi = 0;
         Object.keys(r.myGuesses || {}).forEach(function (k) { drafts.answers[k] = r.myGuesses[k]; });
         Object.keys(r.myWagers || {}).forEach(function (k) { drafts.wagers[k] = !!r.myWagers[k]; });
       });
     });
-    onArm('revealBtn', 'reveal', function (b) { act(b, 'Moving on...', 'reveal'); });
-    on('awardBtn', function (b) { act(b, 'Awarding...', 'award'); });
-    onArm('awardAllBtn', 'awardall', function (b) { act(b, 'Awarding...', 'awardall'); });
+    onArm('revealBtn', 'reveal', function (b) { act(b, 'Moving on…', 'reveal'); });
+    on('awardBtn', function (b) { act(b, 'Awarding…', 'award'); });
+    onArm('awardAllBtn', 'awardall', function (b) { act(b, 'Awarding…', 'awardall'); });
     var mk = document.querySelectorAll('.markBtn');
     for (var mi = 0; mi < mk.length; mi++) (function (b) {
       b.addEventListener('click', function () {
         if (b.getAttribute('aria-pressed') === 'true') return;
-        act(b, '...', 'mark', { target: b.getAttribute('data-id'), ok: b.getAttribute('data-ok') === '1' });
+        act(b, '…', 'mark', { target: b.getAttribute('data-id'), ok: b.getAttribute('data-ok') === '1' });
       });
     })(mk[mi]);
     var tb = document.querySelectorAll('.likeBtn');
     for (var ti = 0; ti < tb.length; ti++) (function (b) {
-      b.addEventListener('click', function (e) { e.preventDefault(); act(b, '...', 'like', { kind: b.getAttribute('data-kind'), clue: b.getAttribute('data-clue'), target: b.getAttribute('data-target') }); });
+      b.addEventListener('click', function (e) { e.preventDefault(); act(b, '…', 'like', { kind: b.getAttribute('data-kind'), clue: b.getAttribute('data-clue'), target: b.getAttribute('data-target') }); });
     })(tb[ti]);
     on('skipBtn', function () { revealIdx = revealLimit(S); stopReveal(); render(); });
-    on('revNextBtn', function (b) { act(b, 'Revealing...', 'revealnext', { idx: S.rvc }); });
-    onArm('revForBtn', 'revfor', function (b) { act(b, 'Revealing...', 'revealnext', { idx: S.rvc }); });
+    on('revNextBtn', function (b) { act(b, 'Revealing…', 'revealnext', { idx: S.rvc }); });
+    onArm('revForBtn', 'revfor', function (b) { act(b, 'Revealing…', 'revealnext', { idx: S.rvc }); });
     on('resultsBtn', function () { resultsOpen = true; render(); var m = $('main'); if (m) m.scrollTop = 0; });
     on('backCluesBtn', function () { resultsOpen = false; render(); });
-    on('nextBtn', function (b) { act(b, 'Starting...', 'next'); });
+    on('nextBtn', function (b) { act(b, 'Starting…', 'next'); });
     on('histBtn', function () { menuOpen = false; view = 'history'; historyData = null; render(); loadHistory(); });
     on('backBtn', function () { view = ''; render(); });
     on('backBtn2', function () { view = ''; render(); });
@@ -1066,12 +1099,12 @@
     on('shareBtn', function (b) { shareInvite(b); });
     on('shareBtn2', function (b) { shareInvite(b); });
     on('showJoinBtn', function () { menuOpen = false; view = 'join'; render(); });
-    onArm('menuBeginBtn', 'mbegin', function (b) { menuOpen = false; act(b, 'Starting...', 'begin'); });
-    onArm('menuRevealBtn', 'mreveal', function (b) { menuOpen = false; act(b, 'Moving on...', 'reveal'); });
-    onArm('menuRevAllBtn', 'mrevall', function (b) { menuOpen = false; act(b, 'Revealing...', 'revealnext', { idx: S.rvc }); });
-    onArm('endBtn', 'end', function (b) { menuOpen = false; act(b, 'Ending...', 'end'); });
+    onArm('menuBeginBtn', 'mbegin', function (b) { menuOpen = false; act(b, 'Starting…', 'begin'); });
+    onArm('menuRevealBtn', 'mreveal', function (b) { menuOpen = false; act(b, 'Moving on…', 'reveal'); });
+    onArm('menuRevAllBtn', 'mrevall', function (b) { menuOpen = false; act(b, 'Revealing…', 'revealnext', { idx: S.rvc }); });
+    onArm('endBtn', 'end', function (b) { menuOpen = false; act(b, 'Ending…', 'end'); });
     onArm('leaveBtn', 'leave', function (b) {
-      b.classList.add('busy'); b.disabled = true; b.innerHTML = 'Leaving...';
+      b.classList.add('busy'); b.disabled = true; b.innerHTML = 'Leaving…';
       run('leave', {}, function () { leave(''); });
     });
     on('doneBtn', function () { leave(''); });
@@ -1079,7 +1112,7 @@
     for (var ri = 0; ri < rms.length; ri++) (function (b) {
       b.addEventListener('click', function () {
         if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Tap to confirm'; b.classList.add('warn'); return; }
-        act(b, 'Removing...', 'remove', { target: b.getAttribute('data-id') });
+        act(b, 'Removing…', 'remove', { target: b.getAttribute('data-id') });
       });
     })(rms[ri]);
   }
@@ -1088,6 +1121,7 @@
     var b = $('guessBtn'); if (!b || !S) return;
     var used = 0, answered = 0;
     S.toGuess.forEach(function (x) { if (drafts.wagers[x.id]) used++; if ((drafts.answers[x.id] || '').trim()) answered++; });
+    b.classList.toggle('pri', answered > 0);
     b.innerHTML = I.lock + 'Lock in ' + plural(answered, 'answer') + (used ? ', ' + plural(used, 'wager') : '');
     var dots = document.querySelectorAll('.pg i');
     S.toGuess.forEach(function (x, i) { if (dots[i] && i !== gi) dots[i].className = (drafts.answers[x.id] || '').trim() ? 'a' : ''; });

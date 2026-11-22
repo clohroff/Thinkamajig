@@ -42,7 +42,8 @@ Never convey right/wrong with color alone: always icon + word.
 ## Shape, depth, spacing
 - Radius: 10 / 14 / 20 / pill. Cards 20.
 - Cards: white, 1px warm border, soft shadow. Index-card feel, slight (-1° to 1°) tilt only on decorative hero cards.
-- Buttons: chunky with a 4px colored bottom lip that collapses on press (tactile, playful).
+- Buttons: chunky with a 4px colored bottom lip that collapses on press (tactile, playful). This is the only
+  hard (unblurred) shadow in the system; cards, fields and toasts use soft offset+blur shadows.
 - Spacing scale 4 / 8 / 12 / 16 / 24 / 32. Screen gutter 16px.
 
 ## Layout
@@ -51,7 +52,8 @@ Never convey right/wrong with color alone: always icon + word.
 - Primary action pinned at the bottom bar, thumb-reachable, ≥ 56px tall. All targets ≥ 44px.
 
 ## Motion
-- 120–200ms for state changes; 400ms pop (`--ease-pop`) for reveals and celebrations.
+- 120–250ms for state changes with `--ease-out` (no overshoot) for sheets, toggles and the note lift.
+- `--ease-pop` (slight overshoot) only for celebrations: answers dropping in, the word slapping down, the lock-in check.
 - Reveal: each answer card drops in with a small pop; the word sticky note flips up.
 - Respect `prefers-reduced-motion`: no transforms, fades only.
 
@@ -86,3 +88,10 @@ Short, warm, a little cheeky. "Lock it in", "Nobody got it", not system-speak.
 - Reveal: answers drop onto the card one by one; the word appears as a sticky strip.
 - Results / end: standings list with tabular numbers; chips as red poker chips.
 - Labels are sentence case, never tracked all-caps. No monospace anywhere.
+
+## Decisions from review (critique 25/40 -> fixes)
+- Right/wrong always shows icon + word (`.mark`), never color alone; a 0 score is neutral, not red.
+- Judge: selected "Wrong" is a quiet tint; selected "Right" is solid teal, so matches stand out.
+- Alerts are white cards with a mini sticky note (not yellow, so they never look like the main button); tap to dismiss; `role="alert"`.
+- "Host", never "Leader". Sentence case everywhere (deliberately not Title Case).
+- Peek works by keyboard too: hold Space or Enter on the note.
