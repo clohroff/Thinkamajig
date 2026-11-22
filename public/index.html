@@ -469,7 +469,7 @@
     if (prev && prev.phase !== 'reveal') revealIdx = 0;   // watched it begin: each writer releases their own group
     else revealIdx = revealLimit(r);                       // arrived after the fact: show everything released so far
   }
-  // Play the newly released group one reveal at a time (1 second apart).
+  // Play the newly released group one reveal at a time (2.5 seconds apart).
   function syncReveal() {
     if (!S || S.phase !== 'reveal' || !S.result) return;
     var lim = revealLimit(S);
@@ -481,7 +481,7 @@
         if (revealIdx < l) revealIdx++;
         if (revealIdx >= l) stopReveal();
         render();
-      }, 1000);
+      }, 2500);
     }
   }
 
@@ -501,7 +501,6 @@
       var pr = (prev && prev.phase === 'reveal' && prev.round === r.round) ? prev.rvc : -1;
       initReveal(prev, r); syncReveal();
       var nx = r.result.clues[r.rvc];
-      if (nx && nx.giverId === r.me && pr !== r.rvc) alertUser('Your turn: reveal the answers to your clue!');
     } else { stopReveal(); revealKey = ''; }
     if (prev && prev.round === r.round && prev.phase !== r.phase) {
       if (prev.phase === 'draw' && r.phase === 'guess') { if (r.toGuess.length) alertUser('All clues are in. Time to answer!'); }
@@ -639,7 +638,8 @@
       '<p>When all the clues are in, everyone answers everyone else&rsquo;s clues. You can change your answers until everyone has locked in.</p>' +
       '<p>A correct guess earns <b>1 chip</b>. The clue writer earns 1 chip per correct guess, <b>unless everyone gets it</b> &mdash; then the writer gets nothing.</p>' +
       '<p>You can <b>wager a chip</b> on an answer: right earns 2, wrong loses 1 &mdash; unless nobody got that clue, then you keep it.</p>' +
-      '<p>Each writer judges the answers to their own clue, then reveals them to the room. Give a thumbs-up to clues and answers you love.</p>' +
+      '<p>Each writer judges the answers to their own clue. An answer is right only if it is <b>the word or a form of it</b>: for MANICURIST, &ldquo;manicure&rdquo; counts but &ldquo;nail tech&rdquo; doesn&rsquo;t.</p>' +
+      '<p>Then the host reveals the clues one at a time. Give a thumbs-up to clues and answers you love.</p>' +
       '<p>The game ends when the <b>100 chips</b> in the center run out. Most chips wins.</p></div>';
   }
 
@@ -844,16 +844,17 @@
       if (earlier) main += '<p class="lbl" style="margin-top:4px">Earlier clues</p>' + earlier;
     } else {
       var up = r.clues[s.rvc];
-      main = '<div class="center" style="padding-top:12px"><h2 class="h" style="font-size:28px;font-weight:700">' + (up ? (up.giverId === s.me ? 'You&rsquo;re up first' : esc(up.giverName) + '&rsquo;s up first') : 'Time for the reveal') + '</h2><p style="color:var(--mute);margin-top:6px">Each writer flips over the answers to their own clue.</p></div>' +
+      main = '<div class="center" style="padding-top:12px"><h2 class="h" style="font-size:28px;font-weight:700">' + 'Time for the reveal</h2><p style="color:var(--mute);margin-top:6px">' + (up ? 'First up: ' + (up.giverId === s.me ? 'your clue' : esc(up.giverName) + '&rsquo;s clue') + '. ' : '') + 'The host shows each clue in turn.</p></div>' +
         device('idle', '', { sm: true, text: plural(N, 'clue') + ' to reveal' });
     }
     if (!done) {
       if (shown < lim) bar = '<button class="btn ghost" id="skipBtn">Skip animation</button>';
       else {
-        var nxt = r.clues[s.rvc];
-        if (nxt && nxt.giverId === s.me) bar = '<p class="hint">Everyone&rsquo;s waiting on you</p><button id="revNextBtn" class="btn pri">Reveal answers to my clue</button>';
-        else if (nxt) bar = '<div class="upnext">' + av(nxt.giverId, nxt.giverName) + '<p style="flex:1">Up next: <b>' + esc(nxt.giverName) + '&rsquo;s clue</b></p><span class="sub" style="font-size:14px">They tap when ready</span></div>' +
-          (s.isHost ? armBtn('revForBtn', 'revfor', 'Reveal it for ' + esc(nxt.giverName), 'Tap again to reveal for them', 'ghost') : '');
+        // The current clue stays on screen until the host moves on.
+        var nxt = r.clues[s.rvc], who = nxt ? (nxt.giverId === s.me ? 'your' : esc(nxt.giverName) + '&rsquo;s') : '';
+        var hostP = s.players.filter(function (p) { return p.id === s.hostId; })[0];
+        if (nxt && s.isHost) bar = '<button id="revNextBtn" class="btn pri">' + (s.rvc === 0 ? 'Start the reveal' : 'Next: ' + who + ' clue') + '</button>';
+        else if (nxt) bar = '<div class="upnext">' + av(nxt.giverId, nxt.giverName) + '<p style="flex:1">Up next: <b>' + (nxt.giverId === s.me ? 'your clue' : who + ' clue') + '</b></p><span class="sub" style="font-size:14px">' + esc(hostP ? hostP.name : 'The host') + ' moves on</span></div>';
       }
     } else bar = '<button class="btn pri" id="resultsBtn">See round results</button>';
     return screen(topBar(s) + steps(s), main, bar);
